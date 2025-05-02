@@ -3,17 +3,19 @@ import styled from 'styled-components';
 import { useSelector } from 'react-redux'
 import Loader from '../Loader';
 import { useState } from 'react';
-import { useLoginMutation } from '../../services/userAuthApi';
+import { useLoginMutation, useReSendLinkMutation } from '../../services/userAuthApi';
 import { storeToken } from '../../services/LocalStorage';
 import Alert from '@mui/material/Alert';
-import {useNavigate,Link} from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import { Button } from '@mui/material';
 
 const Login = () => {
     const isDark = useSelector(state => state.dark.isDark)
     const navigate = useNavigate()
-    
-    const [loginUser,{isLoading}]=useLoginMutation()
-    
+
+    const [loginUser, { isLoading }] = useLoginMutation()
+    const [resendlinkUser, { isLoading: loading }] = useReSendLinkMutation()
+
     const [form, setForm] = useState({
         user_id: '',
         password: ''
@@ -27,6 +29,31 @@ const Login = () => {
         severity: ''
     })
 
+    const resendLink = async (email, user_id) => {
+        setToastMsg({msg:'',severity: ''})
+        try{
+            const res = await resendlinkUser({ user_id, email })
+            
+            if(res.error){
+                setToastMsg({
+                    msg:res.error.data.error,
+                    severity: 'error'
+                })
+            }else{
+                setToastMsg({
+                    msg:res.data.message,
+                    severity: 'success'
+                })
+            }
+
+        }catch(error){
+            setToastMsg({
+                msg: 'Something went wrong!',
+                severity: 'error'
+            })
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError({
@@ -36,26 +63,44 @@ const Login = () => {
 
         if (!form.user_id || !form.password)
             return;
-        
-        try{
+
+        try {
             const response = await loginUser(form)
-            if(response.error){
-                console.log(response.error.data.errors)
-                setToastMsg({
-                    msg: response.error.data.errors,
-                    severity: 'error'
-                })
-            }else{
+            if (response.error) {
+                if (response.error.data.errors === "Please Activate Your Account") {
+                        setToastMsg({
+                                msg: (
+                                    
+                                    <>
+                                        {response.error.data.errors} {' '}
+                                        <Button
+                                            onClick={() => resendLink(response.error.data.email, response.error.data.user_id)}
+                                            style={{ textDecoration: 'underline', color: 'red' }}
+                                        >
+                                            resend link
+                                        </Button>
+                                    </>
+                                    
+                                ),
+                                severity: 'error'
+                            })
+                }else{
+                    setToastMsg({
+                        msg:response.error.data.errors,
+                        severity: 'error'
+                    })
+                }
+            } else {
                 storeToken(response.data.token)
                 navigate('/')
             }
-        }catch (err){
+        } catch (err) {
             setToastMsg({
                 msg: 'Something went wrong!',
                 severity: 'error'
             })
         }
-            
+
     }
 
     return (
@@ -86,9 +131,9 @@ const Login = () => {
                         error.user_id ?
                             <span className='error_msg'>This Field Is Required!</span>
                             :
-                        <></>
+                            <></>
                     }
-             
+
                     <label htmlFor="password" className="label">
                         Password
                     </label>
@@ -121,7 +166,7 @@ const Login = () => {
                     </div>
                     <button type='submit' className='submit' onClick={handleSubmit}>
                         {
-                            isLoading ?
+                            isLoading || loading ?
                                 <div className="loader-wrapper">
                                     <Loader size="sm" />
                                 </div>

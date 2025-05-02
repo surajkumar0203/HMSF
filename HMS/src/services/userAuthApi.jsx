@@ -43,8 +43,44 @@ export const userAuthApi = createApi({
                 }
             },
         }),
+
+        registerPatient: builder.mutation({
+            query: (form) => {
+                return {
+                    url: `patient/createpatient/`,
+                    method: 'POST',
+                    body: form,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        }),
+        activateAccount: builder.query({
+            query: ({uid,token}) => {
+                return {
+                    url: `account/activate/${uid}/${token}`,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        }),
+        reSendLink: builder.mutation({
+            query: ({user_id,email}) => {
+                return {
+                    url: `account/resendlink/`,
+                    method: 'POST',
+                    body: {user_id,email},
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        })
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation } = userAuthApi 

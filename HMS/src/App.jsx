@@ -8,7 +8,7 @@ import Login from './Components/Pages/Login';
 import Register from './Components/Pages/Register';
 import ForgotPassword from './Components/Pages/ForgotPassword';
 import ChangePassword from './Components/Pages/ChangePassword';
-
+import ActivateAccount from './Components/Pages/ActivateAccount'
 function App() {
   
 
@@ -25,6 +25,7 @@ function App() {
           <Route path="/register" element={<Register/>}></Route>
           <Route path="/forgotpassword" element={<ForgotPassword/>}></Route>
           <Route path="/account/resetpassword/:uid/:token" element={<ChangePassword/>}></Route>
+          <Route path="/account/activate/:uid/:token" element={<ActivateAccount/>}></Route>
        </Routes>
    
     </>

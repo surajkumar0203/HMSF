@@ -49,12 +49,12 @@ const ForgotPassword = () => {
             }
             if (response.error) {
 
-                setTimeout(() => {
+           
                     setToastMsg({
                         msg: response.error.data.email[0],
                         severity: 'error'
                     })
-                }, 2000)
+         
             } else {
                 setToastMsg({
                     msg: response.data.msg,
