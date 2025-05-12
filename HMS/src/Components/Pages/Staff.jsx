@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import styled from 'styled-components';
+import Loader from "../Loader";
+import { useCreateStaffQuery, useCreateStaffsMutation } from "../../services/userAuthApi";
+import formatDate from "../../utility/formatDate";
 
 const Staff = () => {
     const isDark = useSelector(state => state.dark.isDark);
@@ -17,36 +20,118 @@ const Staff = () => {
         role: "Staff",
         address: "",
         gender: "",
-        staff_type: ""
+        staff_type: "",
+
+
+        specialization: "",
+        department_name: "",
+        department_head_id: "",
+        available_from: "",
+        available_to: ""
+
+
     });
-    const genderOptions = ["--select--", "Male", "Female"];
-    const staff_typeOptions = ["--select--", "Nurse", "Receptionist", "Doctor"];
+
+    const { data: staff_choices } = useCreateStaffQuery()
+    const [staffRegisterUser, { isLoading }] = useCreateStaffsMutation()
+
+    const genderOptions = ["--select--", ...(staff_choices?.gender_choices || [])];
+    const staff_typeOptions = ["--select--", ...(staff_choices?.role_choices || [])];
     const [error, setError] = useState({});
     const [toastMsg, setToastMsg] = useState({ msg: '', severity: '' });
+    const doctorOnlyFields = ["available_from", "available_to", "specialization", "department_name", "department_head_id"];
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        console.log(name, value);
         setForm({ ...form, [name]: value });
         setError({ ...error, [name]: false });
         setToastMsg({ msg: '', severity: '' });
     };
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const newError = {};
-        console.log(form);
+
         Object.keys(form).forEach(key => {
-            if (!form[key]) newError[key] = true;
+
+            if (!form[key] && (form.staff_type === "Doctor" ? true : !doctorOnlyFields.includes(key))) {
+                if (key !== "department_head_id")
+                    newError[key] = true;
+            }
+
         });
         setError(newError);
-
-        // console.log("Submitted data", form);
         if (Object.keys(newError).length > 0) return;
+        console.log(form)
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
-        navigate('/');
+        if (form.password != form.password2) {
+            setToastMsg({
+                msg: 'Password and Confirm Password must be equal',
+                severity: 'error'
+            })
+            return
+        }
+        if (!regex.test(form.password)) {
+            setToastMsg({
+                msg: `Password must atleast
+                - One Charecter,
+                - One Uppercase,
+                - One Lowercase,
+                - One Spacial Charecter, 
+                - Minimum 8 charrecter`,
+                severity: 'error'
+            })
+            return
+        }
+
+        try {
+            const submission = {
+                ...form,
+                doctor: form.staff_type === "Doctor" ? {
+                    specialization: form.specialization,
+                    department: {
+                        name: form.department_name,
+                        head_id: form.department_head_id||null
+                    },
+                    available_from: "11:22:14",
+                    
+                    available_to: "22:22:17",
+                } : undefined,
+                date_of_birth: formatDate(form.date_of_birth)
+            }
+            delete submission.specialization
+            delete submission.available_from
+            delete submission.available_to
+            delete submission.department_name
+            delete submission.department_head_id
+            
+
+            const response = await staffRegisterUser(submission)
+            console.log(response)
+            if (response.error) {
+                setToastMsg({
+                    msg: "This email address already exists.",
+                    severity: 'error'
+                })
+            } else {
+                setToastMsg({
+                    msg: response.data.message,
+                    severity: 'success'
+                })
+            }
+
+        } catch (err) {
+            console.log(err)
+            setToastMsg({
+                msg: "Something went wrong",
+                severity: 'error'
+            })
+        }
+        // navigate('/');
     };
 
-    const doctorOnlyFields = ["available_from", "available_to","specialization"];
+
     return (
         <div className=" flex items-center justify-center flex-wrap px-4">
             <StyledWrapper className="w-full max-w-6xl md:mt-2 md:mb-0 mt-10 mb-20  rounded-xl p-6  shadow-lg shadow-regal-dark-blue md:p-10">
@@ -63,10 +148,12 @@ const Staff = () => {
                             { label: "Gender", name: "gender" },
                             { label: "Staff Type", name: "staff_type" },
                             { label: "Specialization", name: "specialization", type: "text" },
+                            { label: "Department_Name", name: "department_name", type: "text" },
+                            { label: "Department_Head Id", name: "department_head_id", type: "text" },
                             { label: "Available From", name: "available_from", type: "time" },
                             { label: "Available To", name: "available_to", type: "time" },
                         ].map(({ label, name, type }) => {
-                            if (doctorOnlyFields.includes(name)  && form.staff_type!=="Doctor") return
+                            if (doctorOnlyFields.includes(name) && form.staff_type !== "Doctor") return
                             return (
                                 <div key={name}>
                                     <label htmlFor={name} className="label">{label}</label>
@@ -149,13 +236,30 @@ const Staff = () => {
                         </div>
                     </div>
 
-                    <button type='submit' className='submit mt-6'>
-                        Register
+                    <button type='submit' className='submit '>
+                        {
+                            isLoading ?
+                                <div className="loader-wrapper">
+                                    <Loader size="sm" />
+                                </div>
+                                :
+                                'Register'
+                        }
                     </button>
+                    {
+                        toastMsg.msg ?
+                            <div className="flex justify-center relative">
+
+                                {toastMsg.msg && <Alert severity={toastMsg.severity} style={{ whiteSpace: 'pre-line' }} className="absolute" >{toastMsg.msg}</Alert>}
+
+                            </div>
+                            :
+                            <></>
+                    }
                     <p className="text-center mt-4 text-sm">
                         Already have an account? <Link to="/login" className="text-[#58bc82] hover:underline">Login</Link>
                     </p>
-                    {toastMsg.msg && <Alert severity={toastMsg.severity}>{toastMsg.msg}</Alert>}
+                    {/* {toastMsg.msg && <Alert severity={toastMsg.severity}>{toastMsg.msg}</Alert>} */}
                 </form>
             </StyledWrapper>
         </div>
@@ -167,38 +271,44 @@ const StyledWrapper = styled.div`
     --bg-light: #efefef;
     --bg-dark: #444;
     --clr: #58bc82;
+    --clr-alpha: #9c9c9c60;
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    
+  
   }
-
+.loader-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
   .form input, .form textarea, .form select {
     border-radius: 0.5rem;
     padding: 0.75rem 1rem;
     width: 100%;
+   
     border: none;
     outline: 2px solid var(--bg-dark);
   }
 
+ .error{
+    outline: 2px solid red !important;
+}
+
+    .error_msg{
+        color: red;
+        font-size: 0.8rem;
+    }
+
   .label {
     font-weight: 600;
     color: var(--clr);
-    margin-bottom: 0.25rem;
-    display: block;
   }
 
-  .error {
-    outline: 2px solid red !important;
-  }
-
-  .error_msg {
-    color: red;
-    font-size: 0.75rem;
-  }
-
-  .submit {
+  .form .submit {
     padding: 0.75rem;
+    width: 100%;
     border-radius: 999px;
     background-color: var(--bg-dark);
     color: var(--bg-light);
@@ -206,12 +316,19 @@ const StyledWrapper = styled.div`
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
+
+ display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 3rem; 
+    
   }
 
-  .submit:hover {
+  .form .submit:hover {
     background-color: var(--clr);
     color: var(--bg-dark);
   }
 `;
+
 
 export default Staff;

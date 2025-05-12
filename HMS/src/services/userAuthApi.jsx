@@ -78,9 +78,45 @@ export const userAuthApi = createApi({
                     }
                 }
             },
-        })
+        }),
+
+        createStaff:builder.query({
+            query: () => {
+                return {
+                    url: `staff/createstaff/`,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        }),
+        createStaffs:builder.mutation({
+            query: (form) => {
+                return {
+                    url: `staff/createstaff/`,
+                    method: 'POST',
+                    body:form,
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        }),
+        createPatient:builder.query({
+            query: () => {
+                return {
+                    url: `patient/createpatient/`,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        }),
+        // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery } = userAuthApi 

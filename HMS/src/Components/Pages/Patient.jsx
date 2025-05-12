@@ -1,11 +1,11 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import styled from 'styled-components';
-import { useRegisterPatientMutation } from "../../services/userAuthApi";
+import { useRegisterPatientMutation,useCreatePatientQuery } from "../../services/userAuthApi";
 import Loader from "../Loader";
-
+import formatDate from "../../utility/formatDate";
 
 
 
@@ -14,6 +14,7 @@ const Patient = () => {
     const isDark = useSelector(state => state.dark.isDark);
     const navigate = useNavigate();
     const [patientRegisterUser, { isLoading }] = useRegisterPatientMutation()
+    const {data:patient_choices} = useCreatePatientQuery()
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -23,29 +24,26 @@ const Patient = () => {
         mobile: "",
         role: "Patient",
         address: "",
-        gender: "Male",
+        gender: "",
     });
-    const genderOptions = ["Male", "Female", "Transgender"];
+    const genderOptions = ["--select--", ...(patient_choices?.gender_choices||[])];
     const [error, setError] = useState({});
     const [toastMsg, setToastMsg] = useState({ msg: '', severity: '' });
 
-    useEffect(()=>{
+    useEffect(() => {
         if (toastMsg.msg) {
             const timer = setTimeout(() => {
                 setToastMsg({ msg: '', severity: '' });
-            }, 2000); 
+            }, 2000);
             // Cancels the pending setTimeout if the component unmounts or the toastMsg changes before the 2 seconds.
             // Prevents a call to setToastMsg on an unmounted component, which can cause warnings or bugs.
             // If the component unmounts quickly, the timeout still runs.
             return () => clearTimeout(timer); // Cleanup on unmount or re-render
         }
-    },[toastMsg])
+    }, [toastMsg])
 
-    const formatDate = (value) => {
-        const [YYYY, MM, DD] = value.split("-")
-        return `${DD}-${MM}-${YYYY}`
-    }
-    
+
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm({ ...form, [name]: value });
@@ -64,7 +62,7 @@ const Patient = () => {
 
 
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
-        
+
         if (form.password != form.password2) {
             setToastMsg({
                 msg: 'Password and Confirm Password must be equal',
@@ -72,7 +70,7 @@ const Patient = () => {
             })
             return
         }
-        if(!regex.test(form.password)){
+        if (!regex.test(form.password)) {
             setToastMsg({
                 msg: `Password must atleast
                 - One Charecter,
@@ -84,20 +82,20 @@ const Patient = () => {
             })
             return
         }
-          
-        
+
+
         try {
             const submission = {
                 ...form,
                 date_of_birth: formatDate(form.date_of_birth)
             }
             const response = await patientRegisterUser(submission)
-            if(response.error){
+            if (response.error) {
                 setToastMsg({
                     msg: "This email address already exists.",
                     severity: 'error'
                 })
-            }else{
+            } else {
                 setToastMsg({
                     msg: response.data.message,
                     severity: 'success'
@@ -105,6 +103,7 @@ const Patient = () => {
             }
 
         } catch (err) {
+           
             setToastMsg({
                 msg: "Something went wrong",
                 severity: 'error'
@@ -193,11 +192,16 @@ const Patient = () => {
                                 'Register'
                         }
                     </button>
-                    <div className="flex justify-center relative">
+                    {
+                        toastMsg.msg?
+                        <div className="flex justify-center relative">
 
-                        {toastMsg.msg && <Alert severity={toastMsg.severity} style={{ whiteSpace: 'pre-line' }} className="absolute" >{toastMsg.msg}</Alert>}
+                            {toastMsg.msg && <Alert severity={toastMsg.severity} style={{ whiteSpace: 'pre-line' }} className="absolute" >{toastMsg.msg}</Alert>}
 
-                    </div>
+                        </div>
+                        :
+                        <></>
+                    }
                     <p className="text-center mt-4 text-sm">
                         Already have an account? <Link to="/login" className="text-[#58bc82] hover:underline">Login</Link>
                     </p>
