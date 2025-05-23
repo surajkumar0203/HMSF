@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import styled from 'styled-components';
-import { useRegisterPatientMutation,useCreatePatientQuery } from "../../services/userAuthApi";
+import { useRegisterPatientMutation, useCreatePatientQuery } from "../../services/userAuthApi";
 import Loader from "../Loader";
 import formatDate from "../../utility/formatDate";
 
@@ -14,7 +14,7 @@ const Patient = () => {
     const isDark = useSelector(state => state.dark.isDark);
     const navigate = useNavigate();
     const [patientRegisterUser, { isLoading }] = useRegisterPatientMutation()
-    const {data:patient_choices} = useCreatePatientQuery()
+    const { data: patient_choices } = useCreatePatientQuery()
     const [form, setForm] = useState({
         name: "",
         email: "",
@@ -26,7 +26,7 @@ const Patient = () => {
         address: "",
         gender: "",
     });
-    const genderOptions = ["--select--", ...(patient_choices?.gender_choices||[])];
+    const genderOptions = ["--select--", ...(patient_choices?.gender_choices || [])];
     const [error, setError] = useState({});
     const [toastMsg, setToastMsg] = useState({ msg: '', severity: '' });
 
@@ -72,12 +72,12 @@ const Patient = () => {
         }
         if (!regex.test(form.password)) {
             setToastMsg({
-                msg: `Password must atleast
-                - One Charecter,
+                msg: `Password must contain:
                 - One Uppercase,
                 - One Lowercase,
-                - One Spacial Charecter, 
-                - Minimum 8 charrecter`,
+                - One Digit
+                - One Special character, 
+                - Minimum 8 characters`,
                 severity: 'error'
             })
             return
@@ -100,10 +100,11 @@ const Patient = () => {
                     msg: response.data.message,
                     severity: 'success'
                 })
+                navigate('/login')
             }
 
         } catch (err) {
-           
+
             setToastMsg({
                 msg: "Something went wrong",
                 severity: 'error'
@@ -193,14 +194,14 @@ const Patient = () => {
                         }
                     </button>
                     {
-                        toastMsg.msg?
-                        <div className="flex justify-center relative">
+                        toastMsg.msg ?
+                            <div className="flex justify-center relative">
 
-                            {toastMsg.msg && <Alert severity={toastMsg.severity} style={{ whiteSpace: 'pre-line' }} className="absolute" >{toastMsg.msg}</Alert>}
+                                {toastMsg.msg && <Alert severity={toastMsg.severity} style={{ whiteSpace: 'pre-line' }} className="absolute" >{toastMsg.msg}</Alert>}
 
-                        </div>
-                        :
-                        <></>
+                            </div>
+                            :
+                            <></>
                     }
                     <p className="text-center mt-4 text-sm">
                         Already have an account? <Link to="/login" className="text-[#58bc82] hover:underline">Login</Link>

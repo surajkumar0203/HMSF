@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import styled from 'styled-components';
 import Loader from "../Loader";
-import { useCreateStaffQuery, useCreateStaffsMutation } from "../../services/userAuthApi";
+import { useCreateStaffQuery, useCreateStaffsMutation, useGetDoctorRefrenceQuery } from "../../services/userAuthApi";
 import formatDate from "../../utility/formatDate";
 
 const Staff = () => {
@@ -32,26 +32,58 @@ const Staff = () => {
 
     });
 
+  
+
+
     const { data: staff_choices } = useCreateStaffQuery()
+    const { data: doctorRefrence } = useGetDoctorRefrenceQuery()
     const [staffRegisterUser, { isLoading }] = useCreateStaffsMutation()
 
     const genderOptions = ["--select--", ...(staff_choices?.gender_choices || [])];
     const staff_typeOptions = ["--select--", ...(staff_choices?.role_choices || [])];
+    const doctorSpecilization = ["--select--", ...(doctorRefrence?.data || [])];
     const [error, setError] = useState({});
     const [toastMsg, setToastMsg] = useState({ msg: '', severity: '' });
     const doctorOnlyFields = ["available_from", "available_to", "specialization", "department_name", "department_head_id"];
 
 
+
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm({ ...form, [name]: value });
+
+        let updatedForm = { ...form, [name]: value };
+        if (name === "specialization") {
+
+            const selected = doctorSpecilization.find(item => item.specialization == value)
+            
+            if (selected) {
+                updatedForm = {
+                    ...updatedForm,
+                    department_name: selected.department.name || "",
+                    department_head_id: selected.department.head_id || "",
+                    available_from: selected.available_from || "",
+                    available_to: selected.available_to || "",
+                };
+
+            }else{
+                updatedForm = {
+                    ...updatedForm,
+                    department_name: "",
+                    department_head_id: "",
+                    available_from: "",
+                    available_to: "",
+                };
+            }
+
+        }
+        setForm(updatedForm);
         setError({ ...error, [name]: false });
         setToastMsg({ msg: '', severity: '' });
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newError = {};
-
         Object.keys(form).forEach(key => {
 
             if (!form[key] && (form.staff_type === "Doctor" ? true : !doctorOnlyFields.includes(key))) {
@@ -62,7 +94,7 @@ const Staff = () => {
         });
         setError(newError);
         if (Object.keys(newError).length > 0) return;
-        console.log(form)
+
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
         if (form.password != form.password2) {
@@ -74,12 +106,12 @@ const Staff = () => {
         }
         if (!regex.test(form.password)) {
             setToastMsg({
-                msg: `Password must atleast
-                - One Charecter,
+                msg: `Password must contain:
                 - One Uppercase,
                 - One Lowercase,
-                - One Spacial Charecter, 
-                - Minimum 8 charrecter`,
+                - One Digit
+                - One Special character, 
+                - Minimum 8 characters`,
                 severity: 'error'
             })
             return
@@ -92,11 +124,11 @@ const Staff = () => {
                     specialization: form.specialization,
                     department: {
                         name: form.department_name,
-                        head_id: form.department_head_id||null
+                        head_id: form.department_head_id || null
                     },
-                    available_from: "11:22:14",
-                    
-                    available_to: "22:22:17",
+                    available_from: form.available_from,
+
+                    available_to: form.available_to,
                 } : undefined,
                 date_of_birth: formatDate(form.date_of_birth)
             }
@@ -105,7 +137,7 @@ const Staff = () => {
             delete submission.available_to
             delete submission.department_name
             delete submission.department_head_id
-            
+
 
             const response = await staffRegisterUser(submission)
             console.log(response)
@@ -119,6 +151,7 @@ const Staff = () => {
                     msg: response.data.message,
                     severity: 'success'
                 })
+                navigate('/login')
             }
 
         } catch (err) {
@@ -150,8 +183,8 @@ const Staff = () => {
                             { label: "Specialization", name: "specialization", type: "text" },
                             { label: "Department_Name", name: "department_name", type: "text" },
                             { label: "Department_Head Id", name: "department_head_id", type: "text" },
-                            { label: "Available From", name: "available_from", type: "time" },
-                            { label: "Available To", name: "available_to", type: "time" },
+                            { label: "Available From", name: "available_from", type: "text" },
+                            { label: "Available To", name: "available_to", type: "text" },
                         ].map(({ label, name, type }) => {
                             if (doctorOnlyFields.includes(name) && form.staff_type !== "Doctor") return
                             return (
@@ -203,15 +236,37 @@ const Staff = () => {
                                                     value={form[name]}
                                                     onChange={handleChange} />
                                                 :
+                                                name === "specialization" ?
+                                                    <select
+                                                        name={name}
+                                                        id={name}
+                                                        className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
+                                                        value={form[name]}
+                                                        onChange={handleChange}
+                                                    >
 
-                                                <input
-                                                    type={type}
-                                                    name={name}
-                                                    id={name}
-                                                    className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
-                                                    value={form[name]}
-                                                    onChange={handleChange}
-                                                />
+                                                        {doctorSpecilization.map((item, index) => (
+                                                            index == 0 ?
+                                                                <option key={index} value={item} >{item}</option>
+                                                                :
+                                                                <option key={index} value={item.specialization} >{item.specialization}</option>
+
+
+
+                                                        ))}
+
+
+                                                    </select>
+                                                    :
+                                                    <input
+                                                        type={type}
+                                                        name={name}
+                                                        id={name}
+                                                        className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
+                                                        value={form[name]}
+                                                        readOnly={['department_head_id', 'department_name', 'available_from', 'available_to'].includes(name)}
+                                                        onChange={handleChange}
+                                                    />
 
 
 
@@ -259,7 +314,7 @@ const Staff = () => {
                     <p className="text-center mt-4 text-sm">
                         Already have an account? <Link to="/login" className="text-[#58bc82] hover:underline">Login</Link>
                     </p>
-                    {/* {toastMsg.msg && <Alert severity={toastMsg.severity}>{toastMsg.msg}</Alert>} */}
+
                 </form>
             </StyledWrapper>
         </div>

@@ -5,7 +5,8 @@ import { useSelector } from 'react-redux'
 import Hamburger from './Hamburger'
 import { useState } from 'react'
 import Login from './Pages/Login';
-
+import { getToken,removeToken } from "../services/LocalStorage"
+import { Button } from '@mui/material'
 
 const Headers = () => {
     const isDark = useSelector(state => state.dark.isDark)
@@ -14,14 +15,14 @@ const Headers = () => {
 
     const toggleSidebar = () => {
         setIsSliderbarOpen((prev) => !prev)
-        
-      }
-    
 
+    }
+
+console.log(getToken().access)
     return (
         <>
             <header className={`flex fixed w-full top-0 items-center  justify-between  ${isDark ? 'bg-regal-dark-blue' : 'bg-regal-blue'}`}>
-                
+
                 <div>
                     <p className="text-2xl font-bold flex items-center">
                         <span >
@@ -32,13 +33,13 @@ const Headers = () => {
                 </div>
 
                 <nav className={`flex justify-between p-2 text-xl gap-x-5 gap-y-5 relative`}>
-                
+
                     <ul className='hidden md:flex gap-x-5 items-center md:text-lg'>
-                 
+
                         <li>
                             <NavLink className="group transition duration-300" to="/appoinment"
                                 style={({ isActive }) => ({
-    
+
                                     fontWeight: isActive ? "bold" : ""
                                 })}
                             >Appoinment
@@ -65,21 +66,32 @@ const Headers = () => {
                                 <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
                             </NavLink>
                         </li>
-
                         <li>
-                            <NavLink className="hover:text-gray-700 group transition duration-300" to="/login"
-                                style={({ isActive }) => ({
-                                    fontWeight: isActive ? "bold" : ""
-                                })}
-                            >Login
-                                <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
-                            </NavLink>
+                            {
+                                !getToken().access ?
+                                    <NavLink className="hover:text-gray-700 group transition duration-300" to="/login"
+                                        style={({ isActive }) => ({
+                                            fontWeight: isActive ? "bold" : ""
+                                        })}
+                                    >Login
+                                        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
+                                    </NavLink>
+                                    :
+                                    <Button className="hover:text-gray-700 group transition duration-300" 
+                                        // style={{
+                                        //     fontWeight: isActive ? "bold" : ""
+                                        // }}
+                                        onClick={removeToken}
+                                        
+                                    >Logout
+                                        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
+                                    </Button>
+                            }
                         </li>
-
                     </ul>
-                
+
                     {/* Mobile Sidebar */}
-                    <div className={`fixed top-20 right-0 h-screen w-64 ${!isDark?'bg-regal-trans-blue':'bg-regal-dark-trans-blue'} z-50 transform transition-transform duration-300 ease-in-out  ${isSliderbarOpen ? "translate-x-0" : "translate-x-full"
+                    <div className={`fixed top-20 right-0 h-screen w-64 ${!isDark ? 'bg-regal-trans-blue' : 'bg-regal-dark-trans-blue'} z-50 transform transition-transform duration-300 ease-in-out  ${isSliderbarOpen ? "translate-x-0" : "translate-x-full"
                         } md:hidden`} onClick={toggleSidebar}>
 
                         <ul className="flex flex-col gap-y-6 p-4 text-2xl ">
@@ -113,14 +125,14 @@ const Headers = () => {
                             </li>
                         </ul>
                     </div>
-                    <DarkModeToggle/>
+                    <DarkModeToggle />
                     <div className="md:hidden " onChange={toggleSidebar}>
-                        <Hamburger/>
+                        <Hamburger />
                     </div>
                 </nav>
-            
+
             </header>
-            
+
         </>
     )
 }

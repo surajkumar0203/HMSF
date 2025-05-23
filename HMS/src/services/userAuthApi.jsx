@@ -114,9 +114,20 @@ export const userAuthApi = createApi({
                 }
             },
         }),
+        getDoctorRefrence:builder.query({
+            query: () => {
+                return {
+                    url: `staff/showreference/`,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json'
+                    }
+                }
+            },
+        }),
         // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery } = userAuthApi 
