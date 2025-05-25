@@ -9,12 +9,12 @@ const DarkModeToggle = () => {
   const dispatch = useDispatch()
  
   useEffect(()=>{
-    const root = window.document.documentElement;
+   
     if(isDark){
-      root.classList.add('dark')
+     
       storeTheme('theme', 'dark');
     }else{
-      root.classList.remove('dark');
+    
       storeTheme('theme', 'light');
     }
   },[isDark])

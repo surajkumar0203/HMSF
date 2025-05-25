@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useForgotPasswordMutation } from '../../services/userAuthApi';
 import Alert from '@mui/material/Alert';
 import { Link } from 'react-router-dom'
-
+import IsDarkMode from '../../utility/DarkDay';
 
 const ForgotPassword = () => {
     const isDark = useSelector(state => state.dark.isDark)
@@ -74,7 +74,7 @@ const ForgotPassword = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center  px-4">
+        <div className={`min-h-screen flex items-center justify-center ${IsDarkMode(isDark)} px-4`}>
             <StyledWrapper className="w-full max-w-md  mt-32  rounded-xl p-6 shadow-lg shadow-regal-dark-blue md:p-10  ">
                 <form className="form" method='POST'>
                     <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Verify Email</h2>

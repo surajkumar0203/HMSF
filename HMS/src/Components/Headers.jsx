@@ -1,27 +1,29 @@
 import logo from '../Images/hospital_logo.png'
-import { NavLink } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import DarkModeToggle from './DarkModeToggle'
 import { useSelector } from 'react-redux'
 import Hamburger from './Hamburger'
 import { useState } from 'react'
-import Login from './Pages/Login';
-import { getToken,removeToken } from "../services/LocalStorage"
-import { Button } from '@mui/material'
+
+import { getToken } from "../services/LocalStorage"
+
+
+import ProfileDropdown from './Pages/ProfileDropdown'
 
 const Headers = () => {
     const isDark = useSelector(state => state.dark.isDark)
     const [isSliderbarOpen, setIsSliderbarOpen] = useState(false)
-
+    const navigate = useNavigate();
 
     const toggleSidebar = () => {
         setIsSliderbarOpen((prev) => !prev)
 
     }
 
-console.log(getToken().access)
+
     return (
         <>
-            <header className={`flex fixed w-full top-0 items-center  justify-between  ${isDark ? 'bg-regal-dark-blue' : 'bg-regal-blue'}`}>
+            <header className={`flex fixed w-full top-0 items-center  justify-between  ${isDark ? 'bg-regal-dark-blue text-[azure]' : 'bg-regal-blue text-[black]'}`}>
 
                 <div>
                     <p className="text-2xl font-bold flex items-center">
@@ -37,14 +39,19 @@ console.log(getToken().access)
                     <ul className='hidden md:flex gap-x-5 items-center md:text-lg'>
 
                         <li>
-                            <NavLink className="group transition duration-300" to="/appoinment"
-                                style={({ isActive }) => ({
+                            {
+                                1 ?
+                                    <NavLink className="group transition duration-300" to="/appoinment"
+                                        style={({ isActive }) => ({
 
-                                    fontWeight: isActive ? "bold" : ""
-                                })}
-                            >Appoinment
-                                <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
-                            </NavLink>
+                                            fontWeight: isActive ? "bold" : ""
+                                        })}
+                                    >Appoinment
+                                        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
+                                    </NavLink>
+                                    :
+                                    <></>
+                            }
                         </li>
 
                         <li>
@@ -69,25 +76,17 @@ console.log(getToken().access)
                         <li>
                             {
                                 !getToken().access ?
-                                    <NavLink className="hover:text-gray-700 group transition duration-300" to="/login"
-                                        style={({ isActive }) => ({
-                                            fontWeight: isActive ? "bold" : ""
-                                        })}
-                                    >Login
-                                        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
-                                    </NavLink>
+
+                                    <button className="text-black bg-white hover:bg-gray-400 py-2 px-3  rounded-2xl cursor-pointer" onClick={() => navigate('/login')}>Login</button>
                                     :
-                                    <Button className="hover:text-gray-700 group transition duration-300" 
-                                        // style={{
-                                        //     fontWeight: isActive ? "bold" : ""
-                                        // }}
-                                        onClick={removeToken}
-                                        
-                                    >Logout
-                                        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
-                                    </Button>
+                    
+                                    <ProfileDropdown/>
+                                    
+        
+      
                             }
                         </li>
+
                     </ul>
 
                     {/* Mobile Sidebar */}
@@ -96,11 +95,16 @@ console.log(getToken().access)
 
                         <ul className="flex flex-col gap-y-6 p-4 text-2xl ">
                             <li>
-                                <NavLink className="block py-2 opacity-95 hover:text-gray-300 transition" to="/appoinment" style={({ isActive }) => ({
-                                    fontWeight: isActive ? "bold" : ""
-                                })}>
-                                    Appointment
-                                </NavLink>
+                                {
+                                    getToken().access ?
+                                        <NavLink className="block py-2 opacity-95 hover:text-gray-300 transition" to="/appoinment" style={({ isActive }) => ({
+                                            fontWeight: isActive ? "bold" : ""
+                                        })}>
+                                            Appointment
+                                        </NavLink>
+                                        :
+                                        <></>
+                                }
                             </li>
                             <li>
                                 <NavLink className="block py-2 hover:text-gray-300 transition" to="/contactus" style={({ isActive }) => ({
@@ -117,11 +121,23 @@ console.log(getToken().access)
                                 </NavLink>
                             </li>
                             <li>
-                                <NavLink className="block py-2 hover:text-gray-300 transition" to="/login" style={({ isActive }) => ({
-                                    fontWeight: isActive ? "bold" : ""
-                                })}>
-                                    Login
-                                </NavLink>
+                                {
+                                    !getToken().access ?
+                                        <button className="block py-2 hover:text-gray-300 transition cursor-pointer" onClick={()=>navigate("/login")} >
+                                            Login
+                                        </button>
+                                        :
+                                        
+                                        // <button  className="block py-2 hover:text-gray-300 transition cursor-pointer" onClick={
+                                        //     ()=>{
+                                        //       removeToken()
+                                        //       navigate('/login')  
+                                        //     }
+                                        // } >
+                                        //     Logout
+                                        // </button>
+                                        <ProfileDropdown/>
+                                }
                             </li>
                         </ul>
                     </div>

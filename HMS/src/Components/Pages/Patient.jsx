@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useRegisterPatientMutation, useCreatePatientQuery } from "../../services/userAuthApi";
 import Loader from "../Loader";
 import formatDate from "../../utility/formatDate";
-
+import IsDarkMode from "../../utility/DarkDay";
 
 
 
@@ -113,7 +113,7 @@ const Patient = () => {
 
     };
     return (
-        <div className=" flex items-center justify-center flex-wrap px-4">
+        <div className={`flex items-center justify-center flex-wrap px-4 ${IsDarkMode(isDark)}`}>
             <StyledWrapper className="w-full max-w-6xl md:mt-2 md:mb-0 mt-10 mb-20  rounded-xl p-6  shadow-lg shadow-regal-dark-blue md:p-10">
                 <form onSubmit={handleSubmit} className="form">
                     <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Create a Patient Account</h2>

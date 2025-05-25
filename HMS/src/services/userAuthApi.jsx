@@ -126,8 +126,33 @@ export const userAuthApi = createApi({
             },
         }),
         // next code
+        getProfile:builder.query({
+            query:({ url,token })=>{
+                return {
+                    url: url,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
+        getAppoinmnet:builder.query({
+            query:({ url,token })=>{
+                return {
+                    url: url,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        })
+        // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppoinmnetQuery } = userAuthApi 

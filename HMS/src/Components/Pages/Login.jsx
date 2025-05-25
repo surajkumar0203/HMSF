@@ -8,6 +8,7 @@ import { storeToken } from '../../services/LocalStorage';
 import Alert from '@mui/material/Alert';
 import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@mui/material';
+import IsDarkMode from '../../utility/DarkDay';
 
 const Login = () => {
     const isDark = useSelector(state => state.dark.isDark)
@@ -92,7 +93,17 @@ const Login = () => {
                 }
             } else {
                 storeToken(response.data.token)
-                navigate('/')
+        
+                const role=response.data.user_id.split("-")[0]
+              
+                if(role==="PT"){
+                    navigate('/appoinment')
+
+                }
+                else if(role==="DR"){
+                    navigate('/contactus')
+
+                }
             }
         } catch (err) {
             setToastMsg({
@@ -104,7 +115,7 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center  px-4">
+        <div className={`min-h-screen flex items-center justify-center ${IsDarkMode(isDark)} px-4`}>
             <StyledWrapper className="w-full max-w-md  mt-32  rounded-xl p-6 shadow-lg shadow-regal-dark-blue md:p-10  ">
                 <form className="form">
                     <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Sing-in to MediCare</h2>

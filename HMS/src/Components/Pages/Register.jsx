@@ -1,8 +1,13 @@
 import React, { useState,useEffect } from 'react';
 import Patient from './Patient';
 import Staff from './Staff';
+import { useSelector } from 'react-redux'
+
+import IsDarkMode from "../../utility/DarkDay";
+
 
 const Register = () => {
+    const isDark = useSelector(state => state.dark.isDark);
     let role = sessionStorage.getItem('tab');
     const [tab, setTab] = useState("");
   
@@ -17,9 +22,10 @@ const Register = () => {
 
    
     return (
-        <div className="w-full max-w-4xl mx-auto mt-10 p-4 ">
-        <>
-            <div className="flex justify-center  mt-10">
+        <div className={`${IsDarkMode(isDark)} overflow-hidden  min-h-screen `}>
+        <div className={`max-w-4xl mx-auto mt-10  p-4`}>
+        
+            <div className="flex justify-center mt-10">
                 <button
                     onClick={() => {
                         sessionStorage.setItem('tab', 'Patient')
@@ -50,7 +56,8 @@ const Register = () => {
        
             {tab === 'Patient' ? <Patient /> : <Staff />}
        
-            </>
+            
+         </div>
          </div>
     );
 };
