@@ -138,7 +138,7 @@ export const userAuthApi = createApi({
                 }
             }
         }),
-        getAppoinmnet:builder.query({
+        getAppointment:builder.query({
             query:({ url,token })=>{
                 return {
                     url: url,
@@ -155,4 +155,4 @@ export const userAuthApi = createApi({
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppoinmnetQuery } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery } = userAuthApi 

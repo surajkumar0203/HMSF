@@ -7,6 +7,7 @@ import Loader from "../Loader";
 import { useCreateStaffQuery, useCreateStaffsMutation, useGetDoctorRefrenceQuery } from "../../services/userAuthApi";
 import formatDate from "../../utility/formatDate";
 import IsDarkMode from "../../utility/DarkDay";
+import {convert24To12hour,convert12To24hour} from '../../utility/timeFormat'
 
 const Staff = () => {
     const isDark = useSelector(state => state.dark.isDark);
@@ -63,10 +64,10 @@ const Staff = () => {
                     ...updatedForm,
                     department_name: selected.department.name || "",
                     department_head_id: selected.department.head_id || "",
-                    available_from: selected.available_from || "",
-                    available_to: selected.available_to || "",
+                    available_from: convert24To12hour(selected.available_from) || "",
+                    available_to: convert24To12hour(selected.available_to) || "",
                 };
-
+                
             }else{
                 updatedForm = {
                     ...updatedForm,
@@ -127,9 +128,9 @@ const Staff = () => {
                         name: form.department_name,
                         head_id: form.department_head_id || null
                     },
-                    available_from: form.available_from,
+                    available_from: convert12To24hour(form.available_from),
 
-                    available_to: form.available_to,
+                    available_to: convert12To24hour(form.available_to),
                 } : undefined,
                 date_of_birth: formatDate(form.date_of_birth)
             }
@@ -141,7 +142,7 @@ const Staff = () => {
 
 
             const response = await staffRegisterUser(submission)
-            console.log(response)
+            
             if (response.error) {
                 setToastMsg({
                     msg: "This email address already exists.",
