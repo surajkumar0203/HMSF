@@ -149,10 +149,23 @@ export const userAuthApi = createApi({
                     }
                 }
             }
-        })
+        }),
+        appointmentBook:builder.mutation({
+            query:( {url,token,submission} )=>{
+                return {
+                    url: url,
+                    method: 'POST',
+                    body:submission,
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
         // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery } = userAuthApi 

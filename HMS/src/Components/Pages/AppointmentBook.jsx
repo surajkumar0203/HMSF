@@ -1,61 +1,273 @@
 import { useSelector } from 'react-redux'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import IsDarkMode from '../../utility/DarkDay';
 import deleteWindow from '../../Images/delete.png'
 import styled from 'styled-components';
+import { useGetAppointmentQuery, useAppointmentBookMutation } from '../../services/userAuthApi';
+import { getToken } from '../../services/LocalStorage'
+import Loader from '../Loader';
+import { useState, useEffect, use } from 'react';
+import isDoctorAvailable from '../../utility/isDoctorAvailable';
+import Alert from '@mui/material/Alert';
+import formatDate from '../../utility/formatDate';
+
 const AppointmentBook = ({ setIsAppointmentBook }) => {
-    const isDark = useSelector(state => state.dark.isDark)
-    const navigate = useNavigate()
-    const closeWindow = () => {
-        setIsAppointmentBook(false)
+  const isDark = useSelector(state => state.dark.isDark)
+  const navigate = useNavigate()
+  const { data: appointments, isLoading } = useGetAppointmentQuery({ url: `/appointment/createappoinment/`, token: getToken().access })
+  const [appointmentsBook, { isLoading: Bookloading }] = useAppointmentBookMutation()
+ 
+  
+  const closeWindow = () => {
+    setIsAppointmentBook(false)
+  }
+
+
+  const [form, setForm] = useState({
+    DRid: "",
+    name: "",
+    leave_end_date: "",
+    leave_from_date: "",
+    appointment_date: "",
+
+    fee:"",
+    doctor_details:"",
+    specialization:""
+
+  });
+  const [isAvailable, setIsAvailable] = useState(false)
+  const [toastMsg, setToastMsg] = useState({ msg: '', severity: '' });
+  const appoinmentBookings = ["--select--", ...(appointments?.data || [])];
+  const [error, setError] = useState({});
+  const [isSelected,setIsSelected]=useState(false)
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    let updatedForm = { ...form, [name]: value };
+
+    if(name === "DRid"){
+      const selected = appointments.data.find(item => item.DRid == value)
+
+      if (selected) {
+
+        updatedForm = {
+          ...updatedForm,
+          DRid: selected.DRid,
+          name: selected.name,
+          leave_end_date: selected?.leave_end_date,
+          leave_from_date: selected?.leave_from_date,
+          specialization:selected?.specialization,
+          fee:selected?.fee,
+          doctor_details:selected?.doctor_details
+        }
+        setIsSelected(true)
+
+      }else{
+        updatedForm = {
+          ...updatedForm,
+          DRid: "",
+          name: "",
+          leave_end_date: "",
+          leave_from_date: "",
+          specialization:"",
+          fee:"",
+          doctor_details:""
+        }
+        setIsSelected(false)
+
+      }
     }
+    setForm(updatedForm);
+    setError({ ...error, [name]: false })
+    setToastMsg({
+      msg: '',
+      severity: ''
+    })
+    setIsAvailable(false)
+  }
 
-    return (
-        <div className={`min-h-screen overflow-hidden  ${IsDarkMode(isDark)} px-4`}>
-            <div className=' mt-24 flex justify-end '>
+  useEffect(() => {
+    const checkIsDoctorAvailable = () => {
+      let leave_from_date = form.leave_from_date;
+      let leave_end_date = form.leave_end_date;
+      let appointment_date = form.appointment_date
 
-                <button onClick={closeWindow} className=' cursor-pointer  '>
+      if (leave_from_date && leave_end_date && appointment_date) {
+        const date = isDoctorAvailable(appointment_date, leave_from_date, leave_end_date);
+        if (date != "Invalid Date" && date != 'Doctor Is Avilable') {
+          setToastMsg({
+            msg: date,
+            severity: 'error'
+          })
+          setIsAvailable(true)
+        }
+      }
+    }
+    checkIsDoctorAvailable();
+  }, [form.leave_end_date, form.leave_from_date, form.appointment_date])
 
-                    <img className='w-9 hover:rotate-90 duration-300' title='close window' src={deleteWindow} alt={deleteWindow} />
-                </button>
-            </div>
-            {/*  */}
-            <div className='flex items-center justify-center'>
-                <StyledWrapper className="w-full max-w-md  mt-32  rounded-xl p-6 shadow-lg shadow-regal-dark-blue md:p-10  ">
-                    <form className="form">
-                        <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Book Your Appoinmnet</h2>
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (isAvailable) return
+   
 
-                        <label htmlFor="email" className="label">
-                            Email/UserID
-                        </label>
-                        <input type="text" name="email" id="email" className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'}`} placeholder="Email/UserID"
+    const newError = {};
+    Object.keys(form).forEach((key) => {
+      if ((key === "appointment_date" || key === 'DRid') && (!form[key] || form[key] === "--select--")) {
+        newError[key] = true
+      }
+    })
+    
 
-                        />
+    setError(newError)
+    if (Object.keys(newError).length > 0){
+        return
+    } 
 
-                        <label htmlFor="password" className="label">
-                            Password
-                        </label>
-                        <input type="password" name="password" id="password" className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} `} placeholder="Password"
+    //  api call
+    try {
+      const submission = {
+        ...form,
+        'doctor': form['DRid'],
+        'appointment_date': formatDate(form['appointment_date'])
+      }
+      delete submission.leave_end_date
+      delete submission.leave_from_date
+      delete submission.name
+      delete submission.DRid
+      delete submission.fee
+      delete submission.doctor_details
+      delete submission.specialization
+      
+      const url = '/appointment/createappoinment/'
+      const token = getToken().access
+      const response = await appointmentsBook({ url, token, submission })
+      if(response?.error?.status){
+        setToastMsg({
+            msg: response?.error?.data?.error,
+            severity: 'error'
+          })
+      }
+      else if(response?.data?.status===201){
 
-                        />
+        setToastMsg({
+              msg: response.data.message,
+              severity: 'success'
+            })
+      }
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
 
 
+  return (
+    <div className={`min-h-screen overflow-hidden  ${IsDarkMode(isDark)} px-4`}>
+      <div className=' mt-24 flex justify-end '>
+        <button onClick={closeWindow} className=' cursor-pointer  '>
+          <img className='w-9 hover:rotate-90 duration-300' title='close window' src={deleteWindow} alt={deleteWindow} />
+        </button>
+      </div>
 
 
-                        <button type='submit' className='submit' >
-                            {
+      <div className='flex items-center justify-center flex-wrap px-4'>
+        <StyledWrapper className="w-[30rem] max-w-6xl md:mt-36 md:mb-0 mt-28 mb-20  rounded-xl p-6  shadow-lg shadow-regal-dark-blue md:p-10">
 
-                                'Login'
-                            }
-                        </button>
+          <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Create a Staff Account</h2>
+          <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+
+            {
+              isLoading ?
+                <Loader />
+                :
+
+                <>
+                  <form className="form" onSubmit={handleSubmit}>
+                    <label htmlFor="DRid" className="label">Select Doctor</label>
+                    <select
+                      name="DRid"
+                      id="DRid"
+                      className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} `}
+
+                      onChange={handleChange}
+                    >
 
 
-                    </form>
-                </StyledWrapper>
-            </div>
-        </div>
-    );
+                      {
+                        appoinmentBookings.map((item, index) => (
+                          index == 0 ?
+                            <option key={index} value={item} >{item}</option> :
+                            <option key={item.DRid} value={item.DRid}>{item.name}</option>
+                        ))
+                      }
+
+
+                    </select>
+                    {error['DRid'] && <span className='error_msg'>This Field Is Required!</span>}
+
+                    <label htmlFor="appointment_date" className="label">Appoinment Date</label>
+                    <input
+                      type="date"
+                      name="appointment_date"
+                      id="appointment_date"
+                      className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} `}
+                      min={appointments.date.startdate}
+                      max={appointments.date.enddate}
+
+                      onChange={handleChange}
+
+                    />
+                    {error['appointment_date'] && <span className='error_msg'>This Field Is Required!</span>}
+                      {
+                        isSelected?
+                        <>
+                     <p className="label">Specialization</p>
+                     <p className={`${isDark ? 'bg-gray-800 text-white outline-2 outline-[#444]' : 'bg-white text-black outline-2 outline-black'}  p-3 rounded-[10px]`}>{form.specialization}</p>
+                     
+                     <p className="label">Doctor Details</p>
+                     <p className={`${isDark ? 'bg-gray-800 text-white outline-2 outline-[#444]' : 'bg-white text-black outline-2 outline-black'}  p-3 rounded-[10px] overflow-auto h-72`}>{form.doctor_details}</p>
+                     </>
+                      :
+                      <></>
+                    }
+                      
+                      <button type='submit' className={`submit mt-5 ${isAvailable ? "cursor-not-allowed" : "cursor-pointer "}`} disabled={isAvailable} >
+                        {
+                          Bookloading ?
+                            <div className="loader-wrapper">
+                              <Loader size="sm" />
+                            </div>
+                            :
+                            <p>Book Appoinment {isSelected? <span className='text-red-700'>Pay : ₹ {form.fee}</span>:<></>}</p>
+                        }
+
+                    </button>
+                    {
+                      toastMsg.msg ?
+                        <div className="flex justify-center ">
+
+
+                          {toastMsg.msg && <Alert severity={toastMsg.severity} style={{ whiteSpace: 'pre-line' }}  >{toastMsg.msg}</Alert>}
+
+                        </div>
+                        :
+                        <></>
+                    }
+                  </form>
+                </>
+
+
+            }
+          </div>
+
+        </StyledWrapper>
+      </div>
+
+
+    </div>
+  );
 };
 const StyledWrapper = styled.div`
   .form {
@@ -74,8 +286,7 @@ const StyledWrapper = styled.div`
   justify-content: center;
   height: 100%;
 }
-  .form input[type="text"],
-  .form input[type="password"] {
+  .form input, .form textarea, .form select {
     border-radius: 0.5rem;
     padding: 0.75rem 1rem;
     width: 100%;
@@ -106,7 +317,6 @@ const StyledWrapper = styled.div`
     color: var(--bg-light);
     font-weight: 600;
     font-size: 1rem;
-    cursor: pointer;
     transition: background-color 0.3s ease;
 
  display: flex;
@@ -117,9 +327,10 @@ const StyledWrapper = styled.div`
   }
 
   .form .submit:hover {
-    background-color: var(--clr);
-    color: var(--bg-dark);
+     background-color: var(--clr);
+     color: var(--bg-dark);
   }
 `;
+
 
 export default AppointmentBook;
