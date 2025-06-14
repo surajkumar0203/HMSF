@@ -20,7 +20,7 @@ const Appointment = () => {
   const { data: appointments, isLoading, isSuccess } = useGetAppointmentQuery({ url: `/appointment/showappoinment/?filter=${filterStatus}`, token: getToken().access })
   const [fetchMoreAppointments, { isFetching }] = useLazyGetAppointmentQuery(); // built-in
   const appoinmentDetailScroll = useRef(null);
-
+  
   useEffect(() => {
 
     if (isSuccess && appointments?.data?.results) {
@@ -186,7 +186,7 @@ const Appointment = () => {
             <div>Booking Id</div>
             <div>Patient Name</div>
             <div>Doctor</div>
-            <div>Date</div>
+            <div>Booking Date</div>
             <div>Time</div>
             <div>Status</div>
           </div>
@@ -206,8 +206,8 @@ const Appointment = () => {
                     <div><span className="sm:hidden font-bold">Booking Id: </span>{appointment.booking_id}</div>
                     <div><span className="sm:hidden font-bold">Patient: </span>{appointment.patient}</div>
                     <div><span className="sm:hidden font-bold">Doctor: </span>{appointment.doctor}</div>
-                    <div><span className="sm:hidden font-bold">Date: </span>{appointment.appointment_date}</div>
-                    <div><span className="sm:hidden font-bold">Time: </span>{convert24To12hour(appointment.appointment_time)}</div>
+                    <div><span className="sm:hidden font-bold">Booking Date: </span>{appointment.appointment_date}</div>
+                    <div><span className="sm:hidden font-bold">Time: </span>{!appointment.appointment_time?convert24To12hour(appointment.appointment_time):appointment.appointment_time}</div>
                     <div><span className="sm:hidden font-bold">Status: </span>{appointment.status}</div>
 
                   </div>

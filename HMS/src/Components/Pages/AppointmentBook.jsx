@@ -11,13 +11,15 @@ import isDoctorAvailable from '../../utility/isDoctorAvailable';
 import Alert from '@mui/material/Alert';
 import formatDate from '../../utility/formatDate';
 
+
 const AppointmentBook = ({ setIsAppointmentBook }) => {
+
   const isDark = useSelector(state => state.dark.isDark)
   const navigate = useNavigate()
   const { data: appointments, isLoading } = useGetAppointmentQuery({ url: `/appointment/createappoinment/`, token: getToken().access })
   const [appointmentsBook, { isLoading: Bookloading }] = useAppointmentBookMutation()
- 
-  
+
+
   const closeWindow = () => {
     setIsAppointmentBook(false)
   }
@@ -30,22 +32,24 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
     leave_from_date: "",
     appointment_date: "",
 
-    fee:"",
-    doctor_details:"",
-    specialization:""
+    fee: "",
+    doctor_details: "",
+    specialization: ""
 
   });
   const [isAvailable, setIsAvailable] = useState(false)
   const [toastMsg, setToastMsg] = useState({ msg: '', severity: '' });
+
   const appoinmentBookings = ["--select--", ...(appointments?.data || [])];
   const [error, setError] = useState({});
-  const [isSelected,setIsSelected]=useState(false)
+  const [isSelected, setIsSelected] = useState(false)
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     let updatedForm = { ...form, [name]: value };
 
-    if(name === "DRid"){
+    if (name === "DRid") {
       const selected = appointments.data.find(item => item.DRid == value)
 
       if (selected) {
@@ -56,22 +60,22 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
           name: selected.name,
           leave_end_date: selected?.leave_end_date,
           leave_from_date: selected?.leave_from_date,
-          specialization:selected?.specialization,
-          fee:selected?.fee,
-          doctor_details:selected?.doctor_details
+          specialization: selected?.specialization,
+          fee: selected?.fee,
+          doctor_details: selected?.doctor_details
         }
         setIsSelected(true)
 
-      }else{
+      } else {
         updatedForm = {
           ...updatedForm,
           DRid: "",
           name: "",
           leave_end_date: "",
           leave_from_date: "",
-          specialization:"",
-          fee:"",
-          doctor_details:""
+          specialization: "",
+          fee: "",
+          doctor_details: ""
         }
         setIsSelected(false)
 
@@ -106,10 +110,25 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
     checkIsDoctorAvailable();
   }, [form.leave_end_date, form.leave_from_date, form.appointment_date])
 
+
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => {
+        resolve(true);
+      }
+      script.onerror = () => {
+        resolve(false);
+      }
+      document.body.appendChild(script)
+    })
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (isAvailable) return
-   
+
 
     const newError = {};
     Object.keys(form).forEach((key) => {
@@ -117,12 +136,12 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
         newError[key] = true
       }
     })
-    
+
 
     setError(newError)
-    if (Object.keys(newError).length > 0){
-        return
-    } 
+    if (Object.keys(newError).length > 0) {
+      return
+    }
 
     //  api call
     try {
@@ -138,22 +157,49 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
       delete submission.fee
       delete submission.doctor_details
       delete submission.specialization
-      
+
       const url = '/appointment/createappoinment/'
       const token = getToken().access
       const response = await appointmentsBook({ url, token, submission })
-      if(response?.error?.status){
+  
+      if (response?.error?.status) {
         setToastMsg({
-            msg: response?.error?.data?.error,
+          msg: response?.error?.data?.error,
+          severity: 'error'
+        })
+      }
+      else if (response?.data?.status === 201) {
+        const RazorpayOrderOptions = {
+          ...response.data.data,
+        }
+        const loaded = await loadRazorpayScript();
+        if (!loaded) {
+          setToastMsg({
+            msg: "Payment failed! If any amount has been deducted, it will be refunded within 5-6 working days.",
             severity: 'error'
           })
-      }
-      else if(response?.data?.status===201){
+          return;
+        }
+        const razorpayInstance = new window.Razorpay(RazorpayOrderOptions);
+        
+        razorpayInstance.open();
+        // when payment failed
+        
+        razorpayInstance.on('payment.failed', async (response) => {
+          const submission = {
+            razorpay_order_id: response.error.metadata.order_id,
+            razorpay_payment_id: response.error.metadata.payment_id,
 
-        setToastMsg({
-              msg: response.data.message,
-              severity: 'success'
-            })
+          }
+
+          const res = await appointmentsBook({ url: "/appointment/paymentfailure/", token, submission })
+          setToastMsg({
+            msg: res.data.error,
+            severity: 'error'
+          })
+      
+
+        })
       }
 
     } catch (e) {
@@ -175,7 +221,7 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
       <div className='flex items-center justify-center flex-wrap px-4'>
         <StyledWrapper className="w-[30rem] max-w-6xl md:mt-36 md:mb-0 mt-28 mb-20  rounded-xl p-6  shadow-lg shadow-regal-dark-blue md:p-10">
 
-          <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Create a Staff Account</h2>
+          <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Book Appointment</h2>
           <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
 
             {
@@ -220,28 +266,28 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
 
                     />
                     {error['appointment_date'] && <span className='error_msg'>This Field Is Required!</span>}
-                      {
-                        isSelected?
+                    {
+                      isSelected ?
                         <>
-                     <p className="label">Specialization</p>
-                     <p className={`${isDark ? 'bg-gray-800 text-white outline-2 outline-[#444]' : 'bg-white text-black outline-2 outline-black'}  p-3 rounded-[10px]`}>{form.specialization}</p>
-                     
-                     <p className="label">Doctor Details</p>
-                     <p className={`${isDark ? 'bg-gray-800 text-white outline-2 outline-[#444]' : 'bg-white text-black outline-2 outline-black'}  p-3 rounded-[10px] overflow-auto h-72`}>{form.doctor_details}</p>
-                     </>
-                      :
-                      <></>
+                          <p className="label">Specialization</p>
+                          <p className={`${isDark ? 'bg-gray-800 text-white outline-2 outline-[#444]' : 'bg-white text-black outline-2 outline-black'}  p-3 rounded-[10px]`}>{form.specialization}</p>
+
+                          <p className="label">Doctor Details</p>
+                          <p className={`${isDark ? 'bg-gray-800 text-white outline-2 outline-[#444]' : 'bg-white text-black outline-2 outline-black'}  p-3 rounded-[10px] overflow-auto h-72`}>{form.doctor_details}</p>
+                        </>
+                        :
+                        <></>
                     }
-                      
-                      <button type='submit' className={`submit mt-5 ${isAvailable ? "cursor-not-allowed" : "cursor-pointer "}`} disabled={isAvailable} >
-                        {
-                          Bookloading ?
-                            <div className="loader-wrapper">
-                              <Loader size="sm" />
-                            </div>
-                            :
-                            <p>Book Appoinment {isSelected? <span className='text-red-700'>Pay : ₹ {form.fee}</span>:<></>}</p>
-                        }
+
+                    <button type='submit' id="rzp-button1" className={`submit mt-5 ${isAvailable ? "cursor-not-allowed" : "cursor-pointer "}`} disabled={isAvailable} >
+                      {
+                        Bookloading ?
+                          <div className="loader-wrapper">
+                            <Loader size="sm" />
+                          </div>
+                          :
+                          <p>Book Appoinment {isSelected ? <span className='text-red-700'>Pay : ₹ {form.fee}</span> : <></>}</p>
+                      }
 
                     </button>
                     {
