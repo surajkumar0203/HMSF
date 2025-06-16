@@ -6,7 +6,7 @@ import AppointmentBook from './AppointmentBook';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import Loader from '../Loader';
 import { convert24To12hour } from '../../utility/timeFormat'
-
+import deBoune from '../../utility/deBouncing';
 
 
 const Appointment = () => {
@@ -20,18 +20,24 @@ const Appointment = () => {
   const { data: appointments, isLoading, isSuccess } = useGetAppointmentQuery({ url: `/appointment/showappoinment/?filter=${filterStatus}`, token: getToken().access })
   const [fetchMoreAppointments, { isFetching }] = useLazyGetAppointmentQuery(); // built-in
   const appoinmentDetailScroll = useRef(null);
-  
+  const [backendMessage,setBackendMessage]=useState('')
+
   useEffect(() => {
 
     if (isSuccess && appointments?.data?.results) {
-
+      setBackendMessage('')
       setAppoinmentList([...appointments.data.results])
       setNextUrl(appointments.data.next)
 
+    }else{
+      // setAppoinmentList([...appointments?.data?.searchNotFound])
+      setBackendMessage(appointments?.message)
+      // console.log(appointments)
     }
-
+    
   }, [isSuccess, appointments])
-
+  
+  // console.log(backendMessage)
 
   // load more data
   const loadMoreAppoinments = async () => {
@@ -78,6 +84,25 @@ const Appointment = () => {
 
   };
 
+ 
+  // search
+  const inputHandler = async (e) =>{
+    // setFilterStatus('Cancelled')
+    const searchValue=e.target.value
+      const res = await fetchMoreAppointments({ url: `/appointment/showappoinment/?search=${searchValue}`, token: getToken().access })
+     
+      if(res?.data?.searchNotFound?.length!=0){
+        setBackendMessage("")
+        setAppoinmentList([...res.data.data.results])
+     }
+      else{
+      
+        // setAppoinmentList(res?.data?.searchNotFound)
+        // console.log("kkk",appoinmentList)
+        setBackendMessage(res?.data?.message)
+      }
+      
+    }
 
   useEffect(() => {
     const node = appoinmentDetailScroll.current
@@ -120,6 +145,7 @@ const Appointment = () => {
       </div>
     )
   }
+
   if (appointments.dataNotFound?.length === 0) {
     // when no appoinment available
     return (
@@ -129,7 +155,7 @@ const Appointment = () => {
           <button className="group cursor-pointer rounded-sm outline-none py-1 px-2 bg-[#1db91d] hover:text-[#1db91d] hover:bg-white border" onClick={() => setIsAppointmentBook(!isAppointmentBook)}>
             <span className='font-bold text-2xl mr-1 group-hover:rotate-90 duration-300 '>+</span> Book Appoinment
           </button>
-          <p className='font-bold text-2xl mt-3 text-[#1db91d]'>{appointments.message}</p>
+          <p className='font-bold text-2xl mt-3 text-[#1db91d]'>{backendMessage}</p>
 
         </div>
       </div>
@@ -153,16 +179,19 @@ const Appointment = () => {
           {/* Sticky Search Bar */}
 
           <div className="flex flex-col sm:flex-row gap-4 items-center">
+           
             <div className="flex w-full sm:flex-1 border border-gray-300  rounded overflow-hidden">
               <input
                 type="text"
                 placeholder="Search by patient or doctor or Booking Id"
                 className={`w-full p-2 ${IsDarkMode(isDark)} focus:outline-none `}
+                onInput={deBoune(inputHandler,500)}
               />
-              <button className="bg-blue-500 p-2  text-white cursor-pointer" onClick={() => console.log("Search Button Clicked")}>
+              <button className="bg-blue-500 p-2  text-white cursor-pointer" >
                 Search
               </button>
             </div>
+            
             <div className='flex gap-1 flex-wrap'>
               <button className="group cursor-pointer rounded-sm outline-none  py-1 px-2 bg-[#1db91d] hover:text-[#1db91d] hover:bg-white border mb-3 sm:mb-0" onClick={() => setIsAppointmentBook(!isAppointmentBook)}>
                 <span className='font-bold text-2xl mr-1 group-hover:rotate-90 duration-300 '>+</span> Book Appoinment
@@ -186,7 +215,7 @@ const Appointment = () => {
             <div>Booking Id</div>
             <div>Patient Name</div>
             <div>Doctor</div>
-            <div>Booking Date</div>
+            <div>Appointment Date</div>
             <div>Time</div>
             <div>Status</div>
           </div>
@@ -195,8 +224,10 @@ const Appointment = () => {
           <div className={`flex flex-col gap-2 max-h-[70vh] overflow-y-auto `} ref={appoinmentDetailScroll}>
 
             {
-              appointments.searchNotFound?.length !== 0 ?
-
+              
+              
+              !backendMessage ?
+              // appointments.searchNotFound?.length !== 0 ?
 
                 appoinmentList.map((appointment) => (
                   <div
@@ -206,7 +237,7 @@ const Appointment = () => {
                     <div><span className="sm:hidden font-bold">Booking Id: </span>{appointment.booking_id}</div>
                     <div><span className="sm:hidden font-bold">Patient: </span>{appointment.patient}</div>
                     <div><span className="sm:hidden font-bold">Doctor: </span>{appointment.doctor}</div>
-                    <div><span className="sm:hidden font-bold">Booking Date: </span>{appointment.appointment_date}</div>
+                    <div><span className="sm:hidden font-bold">Appointment Date: </span>{appointment.appointment_date}</div>
                     <div><span className="sm:hidden font-bold">Time: </span>{!appointment.appointment_time?convert24To12hour(appointment.appointment_time):appointment.appointment_time}</div>
                     <div><span className="sm:hidden font-bold">Status: </span>{appointment.status}</div>
 
@@ -214,7 +245,7 @@ const Appointment = () => {
                 ))
 
                 :
-                <p className='font-bold  text-center text-lg text-[#1db91d]'>{appointments.message}</p>
+                <p className='font-bold  text-center text-lg text-[#1db91d]'>{backendMessage}</p>
             }
           </div>
         </div>
