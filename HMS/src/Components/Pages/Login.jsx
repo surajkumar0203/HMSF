@@ -8,12 +8,16 @@ import Alert from '@mui/material/Alert';
 import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@mui/material';
 import IsDarkMode from '../../utility/DarkDay';
-
-
+import { useDispatch } from "react-redux";
+import { setUserID } from '../../features/storeUserID/storeUserIDSlice';
+import CryptoJS from "crypto-js";
+const secretKey = import.meta.env.VITE_ID_SECRET;
 
 const Login = () => {
     const isDark = useSelector(state => state.dark.isDark)
     const navigate = useNavigate()
+
+    const dispatch = useDispatch();
 
     const [loginUser, { isLoading }] = useLoginMutation()
     const [resendlinkUser, { isLoading: loading }] = useReSendLinkMutation()
@@ -94,19 +98,15 @@ const Login = () => {
                 }
             } else {
                 storeToken(response.data.token)
-        
-                const role=response.data.user_id.split("-")[0]
+                const id=response.data.user_id;
+                const encryptedId = CryptoJS.AES.encrypt(id, secretKey).toString();
+                dispatch(setUserID(encryptedId))
+                localStorage.setItem('MedicareUserID', encryptedId);
+                navigate('/home');
               
-                if(role==="PT"){
-                    navigate('/appoinment')
-
-                }
-                else if(role==="DR"){
-                    navigate('/contactus')
-
-                }
             }
         } catch (err) {
+            console.log(err)
             setToastMsg({
                 msg: 'Something went wrong!',
                 severity: 'error'

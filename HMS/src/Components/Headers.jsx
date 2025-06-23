@@ -14,7 +14,7 @@ const Headers = () => {
     const isDark = useSelector(state => state.dark.isDark)
     const [isSliderbarOpen, setIsSliderbarOpen] = useState(false)
     const navigate = useNavigate();
-
+    
     const toggleSidebar = () => {
         setIsSliderbarOpen((prev) => !prev)
 
@@ -39,19 +39,20 @@ const Headers = () => {
                     <ul className='hidden md:flex gap-x-5 items-center md:text-lg'>
 
                         <li>
-                            {
-                                1 ?
-                                    <NavLink className="group transition duration-300" to="/appoinment"
-                                        style={({ isActive }) => ({
+                            
+                                
+                            <NavLink className="group transition duration-300" to={getToken().access?"/home":"/login"}
+                                style={({ isActive }) => ({
 
-                                            fontWeight: isActive ? "bold" : ""
-                                        })}
-                                    >Appoinment
-                                        <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
-                                    </NavLink>
-                                    :
-                                    <></>
-                            }
+                                    fontWeight: isActive ? "bold" : ""
+                                })}
+                            >Home
+                                <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
+                            </NavLink>
+                                    
+                                
+                              
+                            
                         </li>
 
                         <li>

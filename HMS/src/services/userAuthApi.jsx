@@ -151,7 +151,7 @@ export const userAuthApi = createApi({
             }
         }),
         appointmentBook:builder.mutation({
-            query:( {url,token,submission} )=>{
+            query:({url,token,submission})=>{
                 return {
                     url: url,
                     method: 'POST',
@@ -163,9 +163,41 @@ export const userAuthApi = createApi({
                 }
             }
         }),
+// 
+        getquery:builder.query({
+            query:({ url,token })=>{
+                return {
+                    url: url,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
+
+        getDifferentUrlQuery:builder.query({
+             query:({ role,token })=>{
+                let url;
+                if(role==='PT'){
+                    url='patient/showpatient'
+                }else{
+                    url='staff/showstaff'
+                }
+                return {
+                    url: url,
+                    method: 'GET',
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        })
         // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery,useGetqueryQuery,useLazyGetqueryQuery,useGetDifferentUrlQueryQuery } = userAuthApi 

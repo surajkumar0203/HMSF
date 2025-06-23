@@ -7,7 +7,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import Loader from '../Loader';
 import { convert24To12hour } from '../../utility/timeFormat'
 import deBoune from '../../utility/deBouncing';
-
+import formatDate from '../../utility/formatDate';
 
 const Appointment = () => {
   const isDark = useSelector(state => state.dark.isDark);
@@ -237,7 +237,7 @@ const Appointment = () => {
                     <div><span className="sm:hidden font-bold">Booking Id: </span>{appointment.booking_id}</div>
                     <div><span className="sm:hidden font-bold">Patient: </span>{appointment.patient}</div>
                     <div><span className="sm:hidden font-bold">Doctor: </span>{appointment.doctor}</div>
-                    <div><span className="sm:hidden font-bold">Appointment Date: </span>{appointment.appointment_date}</div>
+                    <div><span className="sm:hidden font-bold">Appointment Date: </span>{formatDate(appointment.appointment_date)}</div>
                     <div><span className="sm:hidden font-bold">Time: </span>{!appointment.appointment_time?convert24To12hour(appointment.appointment_time):appointment.appointment_time}</div>
                     <div><span className="sm:hidden font-bold">Status: </span>{appointment.status}</div>
 

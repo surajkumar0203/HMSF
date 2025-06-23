@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import { useGetAppointmentQuery, useAppointmentBookMutation } from '../../services/userAuthApi';
 import { getToken } from '../../services/LocalStorage'
 import Loader from '../Loader';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import isDoctorAvailable from '../../utility/isDoctorAvailable';
 import Alert from '@mui/material/Alert';
 import formatDate from '../../utility/formatDate';
@@ -174,15 +174,12 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
         }
         const loaded = await loadRazorpayScript();
         if (!loaded) {
-          setToastMsg({
-            msg: "Payment failed! If any amount has been deducted, it will be refunded within 5-6 working days.",
-            severity: 'error'
-          })
           return;
         }
         const razorpayInstance = new window.Razorpay(RazorpayOrderOptions);
         
         razorpayInstance.open();
+
         // when payment failed
         
         razorpayInstance.on('payment.failed', async (response) => {
@@ -193,17 +190,19 @@ const AppointmentBook = ({ setIsAppointmentBook }) => {
           }
 
           const res = await appointmentsBook({ url: "/appointment/paymentfailure/", token, submission })
-          setToastMsg({
-            msg: res.data.error,
-            severity: 'error'
-          })
+          const url=res?.data?.redirect
+         
+          if(url){
+            window.location.href=url;
+          }
+  
       
 
         })
       }
 
     } catch (e) {
-      console.log(e)
+     
     }
   }
 

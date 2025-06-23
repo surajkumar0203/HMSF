@@ -4,10 +4,12 @@ import profilePic from '../../Images/profile.png'
 import { removeToken } from '../../services/LocalStorage';
 import { useNavigate } from "react-router-dom"
 import IsDarkMode from '../../utility/DarkDay';
-import { useSelector } from 'react-redux'
+import { useSelector,useDispatch } from 'react-redux'
+import { clearUserID } from '../../features/storeUserID/storeUserIDSlice';
 
 const ProfileDropdown = () => {
     const isDark = useSelector(state => state.dark.isDark);
+    const dispatch=useDispatch()
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
     const navigate = useNavigate();
@@ -58,9 +60,9 @@ const ProfileDropdown = () => {
 
                                 <button className="w-full text-left  hover:text-gray-300 transition cursor-pointer" onClick={
                                     () => {
-                                      
-                                        removeToken()
+                                        dispatch(clearUserID())
                                         navigate('/login')
+                                        removeToken()
                                     }
                                 } >
                                     Logout
