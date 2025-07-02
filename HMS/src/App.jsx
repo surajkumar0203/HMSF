@@ -1,7 +1,7 @@
 import Headers from './Components/Headers'
 import { Route, Routes } from "react-router-dom";
 import Home from './Components/Pages/Home';
-import Appoinment from './Components/Pages/Appoinment';
+import Appoinment from './Components/Pages/Patient/Appoinment';
 import ContactUs from './Components/Pages/ContactUs';
 import AboutUS from './Components/Pages/AboutUS';
 import Login from './Components/Pages/Login';
@@ -9,23 +9,15 @@ import Register from './Components/Pages/Register';
 import ForgotPassword from './Components/Pages/ForgotPassword';
 import ChangePassword from './Components/Pages/ChangePassword';
 import ActivateAccount from './Components/Pages/ActivateAccount'
-import MedicalRecord from './Components/Pages/MedicalRecord';
+import MedicalRecord from './Components/Pages/Patient/MedicalRecord';
 import Index from './Components/Pages/Index';
 import PaymentSuccess from './Components/Pages/PaymentSuccess';
-import { useDispatch } from 'react-redux';
-import { setUserID } from './features/storeUserID/storeUserIDSlice';
-import { useEffect } from 'react';
+import Prescription from './Components/Pages/Patient/Prescription';
+import DoctorPatientList from './Components/Pages/Doctor/DoctorPatientList';
+import PatientDetails from './Components/Pages/Doctor/PatientDetails';
+
 function App() {
   
-  // const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   const savedId = localStorage.getItem('userID');
-  //   if (savedId) {
-  //     dispatch(setUserID(savedId));
-  //   }
-   
-  // }, []);
   return (
     <>
        <Headers/>
@@ -43,6 +35,9 @@ function App() {
           <Route path="/account/resetpassword/:uid/:token" element={<ChangePassword/>}></Route>
           <Route path="/account/activate/:uid/:token" element={<ActivateAccount/>}></Route>
           <Route path="/medicalrecord" element={<MedicalRecord/>}></Route>
+          <Route path="/prescription" element={<Prescription/>}></Route>
+          <Route path="/doctorpatientlist" element={<DoctorPatientList/>}></Route>
+          <Route path="/patientdetails/:amtID" element={<PatientDetails/>}></Route>
        </Routes>
    
     </>

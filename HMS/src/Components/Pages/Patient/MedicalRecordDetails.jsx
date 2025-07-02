@@ -1,9 +1,9 @@
-import IsDarkMode from '../../utility/DarkDay';
-import deleteWindow from '../../Images/delete.png'
+import IsDarkMode from '../../../utility/DarkDay';
+import deleteWindow from '../../../Images/delete.png'
 import { useSelector } from 'react-redux';
-import styled from 'styled-components';
-import formatDate from '../../utility/formatDate';
-import { convert24To12hour } from '../../utility/timeFormat'
+
+import formatDate from '../../../utility/formatDate';
+import { convert24To12hour } from '../../../utility/timeFormat'
 
 const MedicalRecordDetails = ({ medicalRecords, setIsMedicalDetails }) => {
     const isDark = useSelector(state => state.dark.isDark)
@@ -62,67 +62,6 @@ const MedicalRecordDetails = ({ medicalRecords, setIsMedicalDetails }) => {
         </>
     )
 }
-const StyledWrapper = styled.div`
-  .form {
-    --bg-light: #efefef;
-    --bg-dark: #444;
-    --clr: #58bc82;
-    --clr-alpha: #9c9c9c60;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  
-  }
-.loader-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-}
-  .form input, .form textarea, .form select {
-    border-radius: 0.5rem;
-    padding: 0.75rem 1rem;
-    width: 100%;
-   
-    border: none;
-    outline: 2px solid var(--bg-dark);
-  }
 
- .error{
-    outline: 2px solid red !important;
-}
-
-    .error_msg{
-        color: red;
-        font-size: 0.8rem;
-    }
-
-  .label {
-    font-weight: 600;
-    color: var(--clr);
-  }
-
-  .form .submit {
-    padding: 0.75rem;
-    width: 100%;
-    border-radius: 999px;
-    background-color: var(--bg-dark);
-    color: var(--bg-light);
-    font-weight: 600;
-    font-size: 1rem;
-    transition: background-color 0.3s ease;
-
- display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 3rem; 
-    
-  }
-
-  .form .submit:hover {
-     background-color: var(--clr);
-     color: var(--bg-dark);
-  }
-`;
 
 export default MedicalRecordDetails;

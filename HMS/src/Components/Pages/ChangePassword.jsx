@@ -37,9 +37,23 @@ const ChangePassword = () => {
             password2: !form.password2,
           
         })
-
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+        
         if (!form.password || !form.password2) 
             return;
+        
+        if (!regex.test(form.password)) {
+            setToastMsg({
+                msg: `Password must contain:
+                - One Uppercase,
+                - One Lowercase,
+                - One Digit
+                - One Special character, 
+                - Minimum 8 characters`,
+                severity: 'error'
+            })
+            return
+        }
         
         try{
            
@@ -71,7 +85,7 @@ const ChangePassword = () => {
     }
 
     return (
-        <div className={`min-h-screen flex items-center justify-center  ${IsDarkMode(isDark)} px-4`}>
+        <div className={`min-h-screen flex items-center justify-center   ${IsDarkMode(isDark)} px-4`}>
             <StyledWrapper className="w-full max-w-md  mt-32  rounded-xl p-6 shadow-lg shadow-regal-dark-blue md:p-10  ">
                 <form className="form" method='POST'>
                     <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Change Password</h2>
@@ -142,8 +156,8 @@ const ChangePassword = () => {
                                 'Update Password'
                         }
                     </button>
-                    
-                    <Alert severity={toastMsg.severity}>{toastMsg.msg}
+                    <div className="flex justify-center relative">
+                    <Alert  className='absolute' severity={toastMsg.severity}  style={{ whiteSpace: 'pre-line' }}>{toastMsg.msg}
                         {
                             toastMsg.severity==="success"?
                             <Link to="/login" className="text-sm text-[#181b0b] hover:underline pl-4"> 
@@ -153,6 +167,7 @@ const ChangePassword = () => {
                             <></>
                         }
                     </Alert>
+                    </div>
                 </form>
             </StyledWrapper>
         </div>

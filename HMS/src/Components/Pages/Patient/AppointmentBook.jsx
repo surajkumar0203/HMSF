@@ -1,15 +1,15 @@
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import IsDarkMode from '../../utility/DarkDay';
-import deleteWindow from '../../Images/delete.png'
+import IsDarkMode from '../../../utility/DarkDay';
+import deleteWindow from '../../../Images/delete.png'
 import styled from 'styled-components';
-import { useGetAppointmentQuery, useAppointmentBookMutation } from '../../services/userAuthApi';
-import { getToken } from '../../services/LocalStorage'
-import Loader from '../Loader';
+import { useGetAppointmentQuery, useAppointmentBookMutation } from '../../../services/userAuthApi';
+import { getToken } from '../../../services/LocalStorage'
+import Loader from '../../Loader';
 import { useState, useEffect } from 'react';
-import isDoctorAvailable from '../../utility/isDoctorAvailable';
+import isDoctorAvailable from '../../../utility/isDoctorAvailable';
 import Alert from '@mui/material/Alert';
-import formatDate from '../../utility/formatDate';
+import formatDate from '../../../utility/formatDate';
 
 
 const AppointmentBook = ({ setIsAppointmentBook }) => {

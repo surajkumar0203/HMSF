@@ -194,10 +194,52 @@ export const userAuthApi = createApi({
                     }
                 }
             }
-        })
-        // next code
+        }),
+        
+        postQuery:builder.mutation({
+            query:({url,token,submission})=>{
+                return {
+                    url: url,
+                    method: 'POST',
+                    body:submission,
+                    headers: {
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
+     
+        deleteRecord:builder.mutation({
+            query:({url,token})=>{
+                return{
+                    url:url,
+                    method:'DELETE',
+                    headers:{
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
+        
+        updateRecord:builder.mutation({
+            query:({url,token,body})=>{
+                return{
+                    url:url,
+                    method:'PATCH',
+                    body,
+                    headers:{
+                        'Content-type': 'application/json',
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
+
+           // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery,useGetqueryQuery,useLazyGetqueryQuery,useGetDifferentUrlQueryQuery } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery,useGetqueryQuery,useLazyGetqueryQuery,useGetDifferentUrlQueryQuery,usePostQueryMutation,useDeleteRecordMutation,useUpdateRecordMutation } = userAuthApi 

@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux'
-import IsDarkMode from '../../utility/DarkDay';
-import { useGetqueryQuery, useLazyGetqueryQuery } from '../../services/userAuthApi'
-import { getToken } from '../../services/LocalStorage'
-import Loader from '../Loader';
-import { convert24To12hour } from '../../utility/timeFormat'
+import IsDarkMode from '../../../utility/DarkDay';
+import { useGetqueryQuery, useLazyGetqueryQuery } from '../../../services/userAuthApi'
+import { getToken } from '../../../services/LocalStorage'
+import Loader from '../../Loader';
+import { convert24To12hour } from '../../../utility/timeFormat'
 import { useState, useEffect, useRef } from 'react';
-import deBoune from '../../utility/deBouncing';
+import deBoune from '../../../utility/deBouncing';
 import MedicalRecordDetails from './MedicalRecordDetails';
-import formatDate from '../../utility/formatDate';
+import formatDate from '../../../utility/formatDate';
 
 const MedicalRecord = () => {
     const isDark = useSelector(state => state.dark.isDark);
@@ -35,7 +35,9 @@ const MedicalRecord = () => {
                     return !id.has(item.id)
 
                 })
-
+                if(filter.length===0){
+                    return prev
+                }
                 return [...prev, ...filter]
 
             })

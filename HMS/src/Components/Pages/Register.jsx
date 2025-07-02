@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import  { useState,useEffect } from 'react';
 import Patient from './Patient';
 import Staff from './Staff';
 import { useSelector } from 'react-redux'

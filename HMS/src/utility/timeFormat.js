@@ -9,7 +9,7 @@ const convert24To12hour = (time) =>{
         return "Invalid Time";
     }
     const suffix=hour>=12?'PM':'AM'
-    hour=hour%12
+    hour=hour%13
     return `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2,"0")}:${String(second).padStart(2,"0")} ${suffix}`
    
 }

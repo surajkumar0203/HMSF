@@ -36,7 +36,7 @@ const ForgotPassword = () => {
 
         if (!form.email)
             return;
-
+        
         try {
 
             const response = await forgotPassword(form)

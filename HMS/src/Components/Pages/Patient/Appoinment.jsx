@@ -1,13 +1,13 @@
 import { useSelector } from 'react-redux'
-import IsDarkMode from '../../utility/DarkDay';
-import { useGetAppointmentQuery, useLazyGetAppointmentQuery } from '../../services/userAuthApi';
-import { getToken } from '../../services/LocalStorage'
+import IsDarkMode from '../../../utility/DarkDay';
+import { useGetAppointmentQuery, useLazyGetAppointmentQuery } from '../../../services/userAuthApi';
+import { getToken } from '../../../services/LocalStorage'
 import AppointmentBook from './AppointmentBook';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import Loader from '../Loader';
-import { convert24To12hour } from '../../utility/timeFormat'
-import deBoune from '../../utility/deBouncing';
-import formatDate from '../../utility/formatDate';
+import Loader from '../../Loader';
+import { convert24To12hour } from '../../../utility/timeFormat'
+import deBoune from '../../../utility/deBouncing';
+import formatDate from '../../../utility/formatDate';
 
 const Appointment = () => {
   const isDark = useSelector(state => state.dark.isDark);
@@ -17,7 +17,7 @@ const Appointment = () => {
   const [appoinmentList, setAppoinmentList] = useState([])
   const [nextUrl, setNextUrl] = useState(null);
 
-  const { data: appointments, isLoading, isSuccess } = useGetAppointmentQuery({ url: `/appointment/showappoinment/?filter=${filterStatus}`, token: getToken().access })
+  const { data: appointments, isLoading, isSuccess } = useGetAppointmentQuery({ url: `/appointment/showpatientappoinment/?filter=${filterStatus}`, token: getToken().access })
   const [fetchMoreAppointments, { isFetching }] = useLazyGetAppointmentQuery(); // built-in
   const appoinmentDetailScroll = useRef(null);
   const [backendMessage,setBackendMessage]=useState('')
@@ -55,7 +55,9 @@ const Appointment = () => {
           return !booking_id.has(item.booking_id)
 
         })
-
+        if(filter.length===0){
+          return prev
+        }
         return [...prev, ...filter]
 
       })
@@ -89,7 +91,7 @@ const Appointment = () => {
   const inputHandler = async (e) =>{
     // setFilterStatus('Cancelled')
     const searchValue=e.target.value
-      const res = await fetchMoreAppointments({ url: `/appointment/showappoinment/?search=${searchValue}`, token: getToken().access })
+      const res = await fetchMoreAppointments({ url: `/appointment/showpatientappoinment/?search=${searchValue}`, token: getToken().access })
      
       if(res?.data?.searchNotFound?.length!=0){
         setBackendMessage("")

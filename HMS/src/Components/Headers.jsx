@@ -128,15 +128,7 @@ const Headers = () => {
                                             Login
                                         </button>
                                         :
-                                        
-                                        // <button  className="block py-2 hover:text-gray-300 transition cursor-pointer" onClick={
-                                        //     ()=>{
-                                        //       removeToken()
-                                        //       navigate('/login')  
-                                        //     }
-                                        // } >
-                                        //     Logout
-                                        // </button>
+
                                         <ProfileDropdown/>
                                 }
                             </li>
