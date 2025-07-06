@@ -15,7 +15,7 @@ import PaymentSuccess from './Components/Pages/PaymentSuccess';
 import Prescription from './Components/Pages/Patient/Prescription';
 import DoctorPatientList from './Components/Pages/Doctor/DoctorPatientList';
 import PatientDetails from './Components/Pages/Doctor/PatientDetails';
-
+import Profile from './Components/Pages/Profile';
 function App() {
   
   return (
@@ -38,6 +38,8 @@ function App() {
           <Route path="/prescription" element={<Prescription/>}></Route>
           <Route path="/doctorpatientlist" element={<DoctorPatientList/>}></Route>
           <Route path="/patientdetails/:amtID" element={<PatientDetails/>}></Route>
+          <Route path="/profile" element={<Profile/>}></Route>
+
        </Routes>
    
     </>

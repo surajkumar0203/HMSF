@@ -1,8 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+const URL = import.meta.env.VITE_ID_BACKEND_URL
 
 export const userAuthApi = createApi({
     reducerPath: 'userAuthApi',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://127.0.0.1:8000/' }),
+    baseQuery: fetchBaseQuery({ baseUrl: URL }),
 
     endpoints: (builder) => ({
         login: builder.mutation({
@@ -51,7 +52,9 @@ export const userAuthApi = createApi({
                     method: 'POST',
                     body: form,
                     headers: {
-                        'Content-type': 'application/json'
+                        'Content-type': 'application/json',
+                        
+                        
                     }
                 }
             },
@@ -86,7 +89,8 @@ export const userAuthApi = createApi({
                     url: `staff/createstaff/`,
                     method: 'GET',
                     headers: {
-                        'Content-type': 'application/json'
+                        'Content-type': 'application/json',
+                        
                     }
                 }
             },
@@ -97,9 +101,7 @@ export const userAuthApi = createApi({
                     url: `staff/createstaff/`,
                     method: 'POST',
                     body:form,
-                    headers: {
-                        'Content-type': 'application/json'
-                    }
+                   
                 }
             },
         }),

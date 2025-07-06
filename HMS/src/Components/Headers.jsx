@@ -8,7 +8,7 @@ import { useState } from 'react'
 import { getToken } from "../services/LocalStorage"
 
 
-import ProfileDropdown from './Pages/ProfileDropdown'
+import DropdownMenu from './Pages/DropdownMenu'
 
 const Headers = () => {
     const isDark = useSelector(state => state.dark.isDark)
@@ -80,8 +80,8 @@ const Headers = () => {
 
                                     <button className="text-black bg-white hover:bg-gray-400 py-2 px-3  rounded-2xl cursor-pointer" onClick={() => navigate('/login')}>Login</button>
                                     :
-                    
-                                    <ProfileDropdown/>
+                   
+                                    <DropdownMenu/>
                                     
         
       
@@ -129,7 +129,7 @@ const Headers = () => {
                                         </button>
                                         :
 
-                                        <ProfileDropdown/>
+                                        <DropdownMenu/>
                                 }
                             </li>
                         </ul>

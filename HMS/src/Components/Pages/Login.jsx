@@ -98,8 +98,8 @@ const Login = () => {
                 }
             } else {
                 storeToken(response.data.token)
-                const id=response.data.user_id;
-                const encryptedId = CryptoJS.AES.encrypt(id, secretKey).toString();
+                const user_id=response.data.user_id;
+                const encryptedId = CryptoJS.AES.encrypt(user_id, secretKey).toString();
                 dispatch(setUserID(encryptedId))
                 localStorage.setItem('MedicareUserID', encryptedId);
                 navigate('/home');
@@ -149,7 +149,7 @@ const Login = () => {
                     <label htmlFor="password" className="label">
                         Password
                     </label>
-                    <input type="password" name="password" id="password" className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error.password ? 'error' : ''}`} placeholder="Password"
+                    <input type="password" name="password" id="password"  className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error.password ? 'error' : ''}`} placeholder="Password" 
                         onChange={
                             (e) => {
                                 setForm({ ...form, password: e.target.value })
@@ -161,6 +161,7 @@ const Login = () => {
                             }
                         }
                         value={form.password}
+                        autoComplete="on"
                     />
                     {
                         error.password ?

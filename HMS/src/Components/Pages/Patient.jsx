@@ -164,7 +164,8 @@ const Patient = () => {
                                             name={name}
                                             id={name}
                                             className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
-
+                                            autoComplete='on'
+                                            
                                             value={form[name]}
                                             onChange={handleChange} />}
                                 {error[name] && <span className='error_msg'>This Field Is Required!</span>}

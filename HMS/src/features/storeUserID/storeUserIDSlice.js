@@ -12,7 +12,7 @@ export const storeUserIDSlice = createSlice({
         setUserID:(state,actions) =>{
             state.id=actions.payload
         },
-        clearUserID:(state)=>{state.id=null;localStorage.removeItem('MedicareUserID');}
+        clearUserID:(state)=>{state.id=null;localStorage.removeItem('MedicareUserID');localStorage.removeItem('MediCareCurrentUser');}
     }
 });
 

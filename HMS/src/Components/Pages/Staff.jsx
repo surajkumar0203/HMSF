@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
@@ -7,7 +7,7 @@ import Loader from "../Loader";
 import { useCreateStaffQuery, useCreateStaffsMutation, useGetDoctorRefrenceQuery } from "../../services/userAuthApi";
 import formatDate from "../../utility/formatDate";
 import IsDarkMode from "../../utility/DarkDay";
-import {convert24To12hour,convert12To24hour} from '../../utility/timeFormat'
+import { convert24To12hour, convert12To24hour } from '../../utility/timeFormat'
 
 const Staff = () => {
     const isDark = useSelector(state => state.dark.isDark);
@@ -34,7 +34,7 @@ const Staff = () => {
 
     });
 
-  
+
 
 
     const { data: staff_choices } = useCreateStaffQuery()
@@ -52,13 +52,13 @@ const Staff = () => {
 
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, files } = e.target;
 
         let updatedForm = { ...form, [name]: value };
         if (name === "specialization") {
 
             const selected = doctorSpecilization.find(item => item.specialization == value)
-            
+
             if (selected) {
                 updatedForm = {
                     ...updatedForm,
@@ -67,8 +67,8 @@ const Staff = () => {
                     available_from: convert24To12hour(selected.available_from) || "",
                     available_to: convert24To12hour(selected.available_to) || "",
                 };
-                
-            }else{
+
+            } else {
                 updatedForm = {
                     ...updatedForm,
                     department_name: "",
@@ -79,18 +79,43 @@ const Staff = () => {
             }
 
         }
+        if (name === 'profile_image') {
+            const file = files[0]
+
+            if (file.type !== 'image/jpeg') {
+
+                setError({ ...error, [name]: true, msg: 'Only Jpeg Support' });
+                return;
+            }
+            else if (file.size > 1000000000) {
+                setError({ ...error, [name]: true, msg: 'Image Should be less then 10 MB' });
+                return;
+            } else {
+                setError({ ...error, [name]: false });
+                updatedForm = {
+                    ...updatedForm,
+                    profile_image: file
+                }
+            }
+
+        }
         setForm(updatedForm);
+
         setError({ ...error, [name]: false });
         setToastMsg({ msg: '', severity: '' });
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newError = {};
         Object.keys(form).forEach(key => {
 
             if (!form[key] && (form.staff_type === "Doctor" ? true : !doctorOnlyFields.includes(key))) {
-                if (key !== "department_head_id")
+                if (key !== "department_head_id") {
                     newError[key] = true;
+                    newError['msg'] = 'This Field Is Required!'
+
+                }
             }
 
         });
@@ -140,8 +165,18 @@ const Staff = () => {
             delete submission.department_name
             delete submission.department_head_id
 
-
-            const response = await staffRegisterUser(submission)
+            
+             // Upload formData Because Upload Image no JSON data
+            const formData = new FormData();
+            for (const key in submission) {
+                if(key==='doctor' && submission[key]!==undefined){
+                     formData.append('doctor', JSON.stringify(submission[key]));
+                }else{
+                    formData.append(key, submission[key]);
+                }
+                
+            }
+            const response = await staffRegisterUser(formData)
             
             if (response.error) {
                 setToastMsg({
@@ -157,7 +192,7 @@ const Staff = () => {
             }
 
         } catch (err) {
-            console.log(err)
+
             setToastMsg({
                 msg: "Something went wrong",
                 severity: 'error'
@@ -168,7 +203,7 @@ const Staff = () => {
 
 
     return (
-        <div className={` flex items-center justify-center flex-wrap px-4 ${IsDarkMode(isDark)}`}>
+        <div className={`flex items-center justify-center flex-wrap px-4 ${IsDarkMode(isDark)}`}>
             <StyledWrapper className="w-full max-w-6xl md:mt-2 md:mb-0 mt-10 mb-20  rounded-xl p-6  shadow-lg shadow-regal-dark-blue md:p-10">
                 <form onSubmit={handleSubmit} className="form">
                     <h2 className="text-2xl font-bold mb-6 text-center text-[#58bc82]">Create a Staff Account</h2>
@@ -187,6 +222,8 @@ const Staff = () => {
                             { label: "Department_Head Id", name: "department_head_id", type: "text" },
                             { label: "Available From", name: "available_from", type: "text" },
                             { label: "Available To", name: "available_to", type: "text" },
+                            { label: "Upload Profile", name: "profile_image", type: "file" },
+
                         ].map(({ label, name, type }) => {
                             if (doctorOnlyFields.includes(name) && form.staff_type !== "Doctor") return
                             return (
@@ -260,22 +297,36 @@ const Staff = () => {
 
                                                     </select>
                                                     :
-                                                    <input
-                                                        type={type}
-                                                        name={name}
-                                                        id={name}
-                                                        className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
-                                                        value={form[name]}
-                                                        readOnly={['department_head_id', 'department_name', 'available_from', 'available_to'].includes(name)}
-                                                        onChange={handleChange}
-                                                    />
+                                                    name === 'profile_image' ?
+                                                        <input
+                                                            type={type}
+                                                            name={name}
+                                                            id={name}
+                                                            className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
+
+
+                                                            onChange={handleChange}
+                                                        />
+
+                                                        :
+                                                        <input
+                                                            type={type}
+                                                            name={name}
+                                                            id={name}
+                                                            className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error[name] ? 'error' : ''}`}
+                                                            value={form[name]}
+                                                            readOnly={['department_head_id', 'department_name', 'available_from', 'available_to'].includes(name)}
+
+                                                            autoComplete='on'
+                                                            onChange={handleChange}
+                                                        />
 
 
 
 
                                     }
 
-                                    {error[name] && <span className='error_msg'>This Field Is Required!</span>}
+                                    {error[name] && <span className='error_msg'>{error['msg']}</span>}
                                 </div>
                             )
                         })}
@@ -289,7 +340,7 @@ const Staff = () => {
                                 className={`${isDark ? 'bg-gray-800 text-white' : 'bg-white text-black'} ${error.address ? 'error' : ''}`}
                                 value={form.address}
                                 onChange={handleChange} />
-                            {error.address && <span className='error_msg'>This Field Is Required!</span>}
+                            {error.address && <span className='error_msg'>{error['msg']}</span>}
                         </div>
                     </div>
 
