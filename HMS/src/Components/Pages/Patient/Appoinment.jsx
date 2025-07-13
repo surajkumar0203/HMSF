@@ -240,7 +240,7 @@ const Appointment = () => {
                     <div><span className="sm:hidden font-bold">Patient: </span>{appointment.patient}</div>
                     <div><span className="sm:hidden font-bold">Doctor: </span>{appointment.doctor}</div>
                     <div><span className="sm:hidden font-bold">Appointment Date: </span>{formatDate(appointment.appointment_date)}</div>
-                    <div><span className="sm:hidden font-bold">Time: </span>{!appointment.appointment_time?convert24To12hour(appointment.appointment_time):appointment.appointment_time}</div>
+                    <div><span className="sm:hidden font-bold">Time: </span>{convert24To12hour(appointment.appointment_time)}</div>
                     <div><span className="sm:hidden font-bold">Status: </span>{appointment.status}</div>
 
                   </div>

@@ -1,12 +1,12 @@
 const convert24To12hour = (time) =>{
-
+   
     let [hour,minutes,second]=time.split(":").map(Number)
     if(
         !(hour>=0 && hour<24) ||
         !(minutes>=0 && minutes<60) ||
         !(second>=0 && second<60)
     ){
-        return "Invalid Time";
+        return "-";
     }
     const suffix=hour>=12?'PM':'AM'
     if(hour!==12)
@@ -25,7 +25,7 @@ const convert12To24hour = (inputTime) =>{
         !(second>=0 && second<60) ||
         !(['AM','PM'].includes(meridiem))
     ){
-        return "Invalid Time";
+        return "-";
     }
     if(meridiem==='AM' && hour===12)
         hour=0

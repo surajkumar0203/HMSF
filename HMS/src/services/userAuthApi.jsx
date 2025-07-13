@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import ProfileUpdate from '../Components/Pages/ProfileUpdate'
 const URL = import.meta.env.VITE_ID_BACKEND_URL
 
 export const userAuthApi = createApi({
@@ -238,10 +239,23 @@ export const userAuthApi = createApi({
                 }
             }
         }),
+        ProfileUpdate:builder.mutation({
+            query:({url,token,body})=>{
+                return{
+                    url:url,
+                    method:'PATCH',
+                    body,
+                    headers:{
+                       
+                        'Authorization':`Bearer ${token}`
+                    }
+                }
+            }
+        }),
 
            // next code
     }),
 
 })
 
-export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery,useGetqueryQuery,useLazyGetqueryQuery,useGetDifferentUrlQueryQuery,usePostQueryMutation,useDeleteRecordMutation,useUpdateRecordMutation } = userAuthApi 
+export const { useLoginMutation,useForgotPasswordMutation,useChangePasswordMutation,useRegisterPatientMutation,useActivateAccountQuery,useReSendLinkMutation,useCreateStaffQuery,useCreateStaffsMutation,useCreatePatientQuery,useGetDoctorRefrenceQuery,useGetProfileQuery,useGetAppointmentQuery,useAppointmentBookMutation,useLazyGetAppointmentQuery,useGetqueryQuery,useLazyGetqueryQuery,useGetDifferentUrlQueryQuery,usePostQueryMutation,useDeleteRecordMutation,useUpdateRecordMutation,useProfileUpdateMutation } = userAuthApi 

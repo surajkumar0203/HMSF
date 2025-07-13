@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useCallback } from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
@@ -25,6 +25,9 @@ const Patient = () => {
         role: "Patient",
         address: "",
         gender: "",
+        city:"",
+        state:"",
+        pin_code:""
     });
     const genderOptions = ["--select--", ...(patient_choices?.gender_choices || [])];
     const [error, setError] = useState({});
@@ -44,12 +47,18 @@ const Patient = () => {
 
 
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
+        if(name==='pin_code'  && value.length>6)
+            return
+        if(name==='mobile' && value.length>10 )
+            return
+
+
         setForm({ ...form, [name]: value });
         setError({ ...error, [name]: false });
         setToastMsg({ msg: '', severity: '' });
-    };
+    },[form,error]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -122,10 +131,13 @@ const Patient = () => {
                             { label: "Full Name", name: "name", type: "text" },
                             { label: "Email", name: "email", type: "email" },
                             { label: "Date of Birth", name: "date_of_birth", type: "date" },
-                            { label: "Mobile", name: "mobile", type: "text" },
+                            { label: "Mobile", name: "mobile", type: "number" },
                             { label: "Password", name: "password", type: "password" },
                             { label: "Confirm Password", name: "password2", type: "password" },
                             { label: "Gender", name: "gender", },
+                            { label: "City", name: "city", type: "text" },
+                            { label: "State", name: "state", type: "text" },
+                            { label: "Pin Code", name: "pin_code", type: "number" },
                         ].map(({ label, name, type }) => (
                             <div key={name}>
                                 <label htmlFor={name} className="label">{label}</label>

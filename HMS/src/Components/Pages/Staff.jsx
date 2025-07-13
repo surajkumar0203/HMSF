@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useCallback } from "react";
 import { useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
@@ -23,7 +23,9 @@ const Staff = () => {
         address: "",
         gender: "",
         staff_type: "",
-
+        city:"",
+        state:"",
+        pin_code:"",
 
         specialization: "",
         department_name: "",
@@ -51,9 +53,12 @@ const Staff = () => {
 
 
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value, files } = e.target;
-
+        if(name==='pin_code'  && value.length>6)
+            return
+        if(name==='mobile' && value.length>10 )
+            return
         let updatedForm = { ...form, [name]: value };
         if (name === "specialization") {
 
@@ -103,7 +108,7 @@ const Staff = () => {
 
         setError({ ...error, [name]: false });
         setToastMsg({ msg: '', severity: '' });
-    };
+    },[form, error]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -216,6 +221,9 @@ const Staff = () => {
                             { label: "Password", name: "password", type: "password" },
                             { label: "Confirm Password", name: "password2", type: "password" },
                             { label: "Gender", name: "gender" },
+                            { label: "City", name: "city", type: "text" },
+                            { label: "State", name: "state", type: "text" },
+                            { label: "Pin Code", name: "pin_code", type: "number" },
                             { label: "Staff Type", name: "staff_type" },
                             { label: "Specialization", name: "specialization", type: "text" },
                             { label: "Department_Name", name: "department_name", type: "text" },

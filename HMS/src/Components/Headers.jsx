@@ -1,5 +1,5 @@
 import logo from '../Images/hospital_logo.png'
-import { NavLink, useNavigate } from "react-router-dom"
+import { Link, NavLink, useNavigate } from "react-router-dom"
 import DarkModeToggle from './DarkModeToggle'
 import { useSelector } from 'react-redux'
 import Hamburger from './Hamburger'
@@ -27,9 +27,11 @@ const Headers = () => {
 
                 <div>
                     <p className="text-2xl font-bold flex items-center">
-                        <span >
-                            <img src={logo} alt={logo} className='w-20' />
-                        </span>
+                        <Link to="/">
+                            <span >
+                                <img src={logo} alt={logo} className='w-20' />
+                            </span>
+                        </Link>
                         <span className='text-black'>Medi</span><span className='text-red-700'>Care</span>
                     </p>
                 </div>
