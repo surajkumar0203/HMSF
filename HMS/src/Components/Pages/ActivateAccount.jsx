@@ -15,7 +15,7 @@ const ActivateAccount = () => {
   
  
     useEffect(()=>{
-        console.log(data)
+       
         navigate("/login")
     },[])
     

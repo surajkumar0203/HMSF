@@ -9,7 +9,6 @@ import formatDate from '../../../utility/formatDate';
 import doctoricon from '../../../Images/doctor.png'
 import { Link, useLocation } from 'react-router-dom'
 
-import { throttle } from 'lodash';
 
 const DoctorPatientList = () => {
     const isDark = useSelector(state => state.dark.isDark);

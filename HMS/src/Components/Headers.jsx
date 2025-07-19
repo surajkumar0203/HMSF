@@ -19,11 +19,11 @@ const Headers = () => {
         setIsSliderbarOpen((prev) => !prev)
 
     }
-
+   
 
     return (
         <>
-            <header className={`flex fixed w-full top-0 items-center  justify-between  ${isDark ? 'bg-regal-dark-blue text-[azure]' : 'bg-regal-blue text-[black]'}`}>
+            <header className={`flex fixed w-full top-0 items-center  justify-between  z-50 ${isDark ? 'bg-regal-dark-blue text-[azure]' : 'bg-regal-blue text-[black]'}`}>
 
                 <div>
                     <p className="text-2xl font-bold flex items-center">
@@ -93,21 +93,17 @@ const Headers = () => {
                     </ul>
 
                     {/* Mobile Sidebar */}
-                    <div className={`fixed top-20 right-0 h-screen w-64 ${!isDark ? 'bg-regal-trans-blue' : 'bg-regal-dark-trans-blue'} z-50 transform transition-transform duration-300 ease-in-out  ${isSliderbarOpen ? "translate-x-0" : "translate-x-full"
+                    <div className={`fixed top-20 right-0 h-screen w-64 ${!isDark ? 'bg-regal-blue' : 'bg-regal-dark-blue'} z-50 transform transition-transform duration-300 ease-in-out  ${isSliderbarOpen ? "translate-x-0" : "translate-x-full"
                         } md:hidden`} onClick={toggleSidebar}>
 
                         <ul className="flex flex-col gap-y-6 p-4 text-2xl ">
+                           
                             <li>
-                                {
-                                    getToken().access ?
-                                        <NavLink className="block py-2 opacity-95 hover:text-gray-300 transition" to="/appoinment" style={({ isActive }) => ({
-                                            fontWeight: isActive ? "bold" : ""
-                                        })}>
-                                            Appointment
-                                        </NavLink>
-                                        :
-                                        <></>
-                                }
+                                <NavLink className="block py-2 hover:text-gray-300 transition" to={getToken().access?"/home":"/login"} style={({ isActive }) => ({
+                                    fontWeight: isActive ? "bold" : ""
+                                })}>
+                                    Home
+                                </NavLink>
                             </li>
                             <li>
                                 <NavLink className="block py-2 hover:text-gray-300 transition" to="/contactus" style={({ isActive }) => ({

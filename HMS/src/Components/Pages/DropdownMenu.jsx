@@ -42,7 +42,7 @@ const DropdownMenu = () => {
             setCurrentUser(jsonParse)
         }
     },[User])
-    
+
     return (
         
         <div className="relative inline-block text-left" ref={dropdownRef}>
@@ -63,7 +63,7 @@ const DropdownMenu = () => {
                         animate={{ opacity: 1, y: 0 }}
 
                         transition={{ duration: 0.1 }}
-                        className={`absolute right-0 mt-2 w-64  rounded-md shadow-lg border z-50  ${IsDarkMode(isDark)}`}
+                        className={`absolute right-0 mt-2 w-64  rounded-md shadow-lg border   ${IsDarkMode(isDark)}`}
                     >
                         <div className="py-2 px-4">
                             <h2 className="text-lg font-semibold">{currentUser?.name}</h2>
@@ -73,14 +73,18 @@ const DropdownMenu = () => {
                         <ul className="py-1">
 
                             <Link to="/profile" className='group' state={{ currentUser }}>
-                                <li className="group px-4 py-2 hover:bg-red-700 cursor-pointer hover:text-gray-300 text-amber-800">
+                                <li onClick={()=>setIsOpen(false)} className="group px-4 py-2 hover:bg-red-700 cursor-pointer hover:text-gray-300 text-amber-800">
                                     My Profile
                                 </li>
                             </Link>
-
-                            <Link to="/profile" className='group' state={{ currentUser }}>
-                                <li className="px-4 py-2 hover:bg-red-700 cursor-pointer hover:text-gray-300 text-amber-800">Settings</li>
+                            {
+                            currentUser?.user_id?.split("-")[0]==="DR"&&
+                            <Link to="/leave" className='group' state={{ currentUser }}>
+                                <li onClick={()=>setIsOpen(false)} className="px-4 py-2 hover:bg-red-700 cursor-pointer hover:text-gray-300 text-amber-800">Leave Apply</li>
                             </Link>
+                            }
+                            
+                            
                             <button className="w-full text-left   cursor-pointer" onClick={
                                 () => {
                                     dispatch(clearUserID())
@@ -88,7 +92,7 @@ const DropdownMenu = () => {
                                     removeToken()
                                 }
                             } >
-                                <li className="group px-4    py-2 hover:bg-red-700 cursor-pointer hover:text-gray-300 text-amber-800">
+                                <li  className="group px-4    py-2 hover:bg-red-700 cursor-pointer hover:text-gray-300 text-amber-800">
                                     Logout
                                 </li>
                             </button>

@@ -16,6 +16,8 @@ import Prescription from './Components/Pages/Patient/Prescription';
 import DoctorPatientList from './Components/Pages/Doctor/DoctorPatientList';
 import PatientDetails from './Components/Pages/Doctor/PatientDetails';
 import Profile from './Components/Pages/Profile';
+import LeaveApply from './Components/Pages/LeaveApply';
+
 function App() {
   
   return (
@@ -39,6 +41,7 @@ function App() {
           <Route path="/doctorpatientlist" element={<DoctorPatientList/>}></Route>
           <Route path="/patientdetails/:amtID" element={<PatientDetails/>}></Route>
           <Route path="/profile" element={<Profile/>}></Route>
+          <Route path="/leave" element={<LeaveApply/>}></Route>
 
        </Routes>
    
