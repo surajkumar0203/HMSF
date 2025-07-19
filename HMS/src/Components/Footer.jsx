@@ -1,7 +1,4 @@
-import React from 'react'
 import card from '../Images/cards.png'
-import { NavLink } from 'react-router-dom'
-import IsDarkMode from "../utility/DarkDay";
 import { useSelector } from 'react-redux'
 
 const Footer = () => {

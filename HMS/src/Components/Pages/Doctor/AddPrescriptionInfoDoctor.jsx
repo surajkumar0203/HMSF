@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { usePostQueryMutation } from '../../../services/userAuthApi';
 import { getToken } from '../../../services/LocalStorage'
 import { useState,useCallback } from 'react';
-
 import Loader from '../../Loader';
 import Alert from '@mui/material/Alert';
 

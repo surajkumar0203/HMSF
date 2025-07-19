@@ -1,7 +1,6 @@
 import calender from '../../../Images/calendar.png'
 import medicalrecord from '../../../Images/medicalrecord.png'
 import prescription from '../../../Images/prescription.png'
-import visit_room from '../../../Images/visit_room.png'
 import { Link } from 'react-router-dom'
 
 const PatientDashboard = ({isDark}) => {
@@ -14,7 +13,6 @@ const PatientDashboard = ({isDark}) => {
                         { src: calender, alt: "appointment", title: 'Appointment Book', href: '/appointment' },
                         { src: medicalrecord, alt: "medicalrecord", title: 'MedicalRecord', href: '/medicalrecord' },
                         { src: prescription, alt: "prescription", title: 'Prescription', href: '/prescription' },
-                        // { src: visit_room, alt: "room", title: 'Room', href: '/room' },
 
                     ].map(({ src, alt, title, href }, key) => (
                         <Link key={key} to={href} className={`rounded-xl p-6 flex  flex-col items-center hover:shadow-lg transition duration-300 ${isDark ? 'bg-gray-800  hover:shadow-gray-600 text-[#e3e3ec]' : 'bg-[#e3e3ec] text-black hover:shadow-[#a7a5a5]'}`}>

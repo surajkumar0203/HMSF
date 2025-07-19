@@ -14,7 +14,6 @@ const initialFormState = {
   city: '',
   state: '',
   pin_code: '',
-  // profile_image: null,
 };
 
 const ProfileUpdate = ({seIsProfileUpdate,isDoctor}) => {
