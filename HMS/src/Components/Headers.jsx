@@ -57,16 +57,7 @@ const Headers = () => {
                             
                         </li>
 
-                        <li>
-                            <NavLink className="hover:text-gray-700 group transition duration-300" to="/contactus"
-                                style={({ isActive }) => ({
-                                    fontWeight: isActive ? "bold" : ""
-                                })}
-                            >Contact-us
-                                <span className="block max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-dark-teal"></span>
-                            </NavLink>
-                        </li>
-
+                        
                         <li>
                             <NavLink className="hover:text-gray-700 group transition duration-300" to="/aboutus"
                                 style={({ isActive }) => ({
@@ -105,13 +96,7 @@ const Headers = () => {
                                     Home
                                 </NavLink>
                             </li>
-                            <li>
-                                <NavLink className="block py-2 hover:text-gray-300 transition" to="/contactus" style={({ isActive }) => ({
-                                    fontWeight: isActive ? "bold" : ""
-                                })}>
-                                    Contact-us
-                                </NavLink>
-                            </li>
+                           
                             <li>
                                 <NavLink className="block py-2 hover:text-gray-300 transition" to="/aboutus" style={({ isActive }) => ({
                                     fontWeight: isActive ? "bold" : ""

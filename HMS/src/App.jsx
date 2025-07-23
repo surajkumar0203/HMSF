@@ -2,7 +2,6 @@ import Headers from './Components/Headers'
 import { Route, Routes } from "react-router-dom";
 import Home from './Components/Pages/Home';
 import Appoinment from './Components/Pages/Patient/Appoinment';
-import ContactUs from './Components/Pages/ContactUs';
 import AboutUS from './Components/Pages/AboutUS';
 import Login from './Components/Pages/Login';
 import Register from './Components/Pages/Register';
@@ -48,7 +47,6 @@ function App() {
           <Route path="/home" element={<Home/>}></Route>
           <Route path="/appointment" element={accessToken?<Appoinment/>:<Index/>}></Route>
           <Route path="/appointment/paymentconformation" element={accessToken?<PaymentSuccess/>:<Index/>}></Route>
-          <Route path="/contactus" element={<ContactUs/>}></Route>
           <Route path="/aboutus" element={<AboutUS/>}></Route>
           <Route path="/login" element={!accessToken?<Login/>:<Home/>}></Route>
           <Route path="/register" element={!accessToken?<Register/>:<Index/>}></Route>
