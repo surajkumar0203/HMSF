@@ -40,7 +40,6 @@ const Index = () => {
                             </section>
                         ))
                     }
-                    Hello Suraj
                 </div>
             </div>
             <Footer/>
