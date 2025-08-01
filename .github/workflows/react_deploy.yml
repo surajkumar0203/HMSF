@@ -1,0 +1,25 @@
+name: React_deploy
+
+# Trigger the workflow on push and
+# pull request events on the master branch
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+# Authenticate to the the server via ssh
+# and run our deployment script
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy React project to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          port: ${{ secrets.PORT }}
+          key: ${{ secrets.SSHKEY }}
+          script: "cd /var/www/HMSF && ./.scripts/react_deploy.sh"
