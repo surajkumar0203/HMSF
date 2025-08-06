@@ -56,7 +56,7 @@ function App() {
           <Route path="/medicalrecord" element={accessToken && currentRole==='PT'? <MedicalRecord/>:<PageNotFound/>}></Route>
           <Route path="/prescription" element={accessToken && currentRole==='PT'?<Prescription/>:<PageNotFound/>}></Route>
           <Route path="/doctorpatientlist" element={accessToken && currentRole==='DR'?<DoctorPatientList/>:<PageNotFound/>}></Route>
-          <Route path="/patientdetails/:amtID" element={accessToken && currentRole==='PT'?<PatientDetails/>:<PageNotFound/>}></Route>
+          <Route path="/patientdetails/:amtID" element={accessToken && currentRole==='DR'?<PatientDetails/>:<PageNotFound/>}></Route>
           <Route path="/profile" element={<Profile/>}></Route>
           <Route path="/leave" element={accessToken && currentRole==='DR'?<LeaveApply/>:<PageNotFound/>}></Route>
           <Route path='/*' element={<PageNotFound/>}></Route>
