@@ -95,13 +95,18 @@ const LeaveHistory = ({ setIsLeaveHistory }) => {
                                 <div className={`grid grid-cols-1 sm:grid-cols-5 gap-4 p-2 rounded shadow`}>
                                     <div><span className="sm:hidden font-bold">From Date: </span>{records.from_date}</div>
                                     <div><span className="sm:hidden font-bold">End Date: </span>{records.end_date}</div>
-                                    <div><span className="sm:hidden font-bold">Leave Approval: </span>{records.leave_approval ? <span className="bg-green-400 text-green-800 p-1 rounded">approved</span> : <span className="bg-red-400 text-red-800 p-1 rounded">rejected</span>}</div>
-
+                                   <div><span className="sm:hidden font-bold">Leave Approval: </span>{records.leave_approval ? <span className="bg-green-400 text-green-800 p-1 rounded">approved</span> : 
+                                        new Date(records.from_date)>new Date() ? <span className="bg-yellow-400 text-yellow-800 p-1 rounded">pending</span> :
+                                    
+                                    <span className="bg-red-400 text-red-800 p-1 rounded">rejected</span>
+                                    }</div>
+                                   
                                     <div><span className="sm:hidden font-bold">Show more: </span><button className={`text-regal-blue underline underline-offset-2 cursor-pointer`} onClick={() => setExpandedId(expandedId === records.id ? null : records.id)}>Click here</button></div>
                                     {
-                                    !records.leave_approval&&
+                                    !records.leave_approval && new Date(records.from_date)>new Date() &&
                                     <div><span className="sm:hidden font-bold">Show more: </span><button className={`text-yellow-400 underline underline-offset-2 cursor-pointer`} onClick={()=>CancelLeave(records.id)}>Cancel leave</button></div>
                                     }
+                                   
                                 </div>
                                 {/* Collapse Section */}
                                 {expandedId === records.id && (
