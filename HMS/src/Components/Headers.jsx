@@ -32,7 +32,7 @@ const Headers = () => {
                                 <img src={logo} alt={logo} className='w-20' />
                             </span>
                         </Link>
-                        <span className='text-black'>Medi</span><span className='text-red-700'>Care</span>
+                        <span className='text-black'>Medi</span><span className='text-red-200'>Care</span>
                     </p>
                 </div>
 
